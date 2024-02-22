@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  web:
+    build: .
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      - ".:/var/www"
+    environment:
+      APP_ENV: "dev"
+  db:
+    image: "mariadb:10.6"
+    environment:
+      MARIADB_USER: mati
+      MARIADB_PASSWORD: mati
+      MARIADB_DATABASE: mati
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: yes
