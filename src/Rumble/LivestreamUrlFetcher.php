@@ -37,7 +37,7 @@ final readonly class LivestreamUrlFetcher
     $html = $response->getContent(false);
     $crawler = new Crawler($html, $this->livestreamLandingUrl);
 
-    $liveThumbnail = $crawler->filter('.thumbnail__thumb--live')->first();
+    $liveThumbnail = $crawler->filter('.thumbnail__thumb--live,.thumbnail__thumb--upcoming')->first();
     if (0 === $liveThumbnail->count()) {
       $this->logger->warning('LivestreamUrlFetcher: no live thumbnail present');
 
