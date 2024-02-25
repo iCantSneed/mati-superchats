@@ -1,0 +1,38 @@
+name: Build and Deploy
+on:
+  workflow_dispatch:
+jobs:
+  build_deploy:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/icantsneed/mati-superchats:master
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+      env:
+        APP_ENV: prod
+        APP_DEBUG: 0
+        DB_USER: changeme
+        DB_PASS: changeme
+        DB_NAME: changeme
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: composer install --no-dev --optimize-autoloader
+      - name: Dump environment variables
+        run: composer dump-env prod
+      # - name: Zip up required files
+      #   run: zip -r -9 mati.zip bin/ config/ migrations/ src/ vendor/ .env.local.php composer.json
+      - name: 'Create and upload artifact [temp]'
+        uses: actions/upload-artifact@v4
+        with:
+          name: mati
+          path: |
+            bin/
+            config/
+            migrations/
+            src/
+            vendor/
+            .env.local.php
+            composer.json
+          if-no-files-found: error
