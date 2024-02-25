@@ -17,6 +17,8 @@ jobs:
         DB_NAME: changeme
     steps:
       - uses: actions/checkout@v4
+      - name: Generate APP_SECRET
+        run: echo "APP_SECRET=$(openssl rand -hex 16)" >> "$GITHUB_ENV"
       - name: Install dependencies
         run: composer install --no-dev --optimize-autoloader
       - name: Dump environment variables
