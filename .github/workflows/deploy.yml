@@ -13,9 +13,9 @@ jobs:
         APP_ENV: prod
         APP_DEBUG: 0
         APP_SECRET: ${{ secrets.APP_SECRET }}
-        DB_USER: changeme
-        DB_PASS: changeme
-        DB_NAME: changeme
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASS: ${{ secrets.DB_PASS }}
+        DB_NAME: ${{ secrets.DB_NAME }}
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
@@ -25,4 +25,5 @@ jobs:
       - name: Zip up required files
         run: zip -r -9 mati.zip bin/ config/ html/ migrations/ src/ vendor/ .env.local.php composer.json
       - name: Deploy archive
-        run: 'curl -v -k -H "X-Mati-Deploy: ${{ secrets.APP_SECRET }}" -F "archive=@mati.zip" https://mati.x10.mx/index.php/deploy'
+        run: |
+          curl -v -k --fail-with-body --stderr - -H "X-Mati-Deploy: ${{ secrets.APP_SECRET }}" -F "archive=@mati.zip" https://mati.x10.mx/index.php/deploy
