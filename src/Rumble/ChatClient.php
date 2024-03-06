@@ -31,7 +31,7 @@ final readonly class ChatClient
   {
     $source = $this->client->connect($chatUrl);
     while ($source) {
-      foreach ($this->client->stream($source, 300) as $chunk) {
+      foreach ($this->client->stream($source, 270) as $chunk) { // 4.5 minutes
         if ($chunk->isTimeout()) {
           continue;
         }
@@ -49,6 +49,7 @@ final readonly class ChatClient
         }
 
         $rawData = $chunk->getData();
+        $this->logger->debug('ChatClient: got SSE data', ['rawData' => $rawData]);
 
         try {
           $sseData = $this->serializer->deserialize($rawData, SseData::class, 'json');

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mati\Command;
 
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Mati\Ipc\IpcServer;
@@ -50,18 +51,16 @@ final class MatiStreamCommand extends Command
       return Command::FAILURE;
     }
 
+    $em = $this->entityManager;
     foreach ($this->chatClient->readData($chatUrl) as $sseData) {
       foreach ($this->superchatConverter->extractSuperchats($sseData) as $superchat) {
         try {
-          $this->entityManager->beginTransaction();
-          $this->entityManager->persist($superchat);
-          $this->entityManager->flush();
-          $this->entityManager->commit();
+          $em->persist($superchat);
+          $em->flush();
           $this->ipcServer->send($this->superchatRenderer->toJson($superchat));
         } catch (UniqueConstraintViolationException $e) {
           $this->logger->warning('Superchat already exists', ['exception' => $e]);
-          $this->entityManager->rollback();
-          $this->doctrine->resetManager();
+          $em = new EntityManager($em->getConnection(), $em->getConfiguration());
         }
       }
     }
