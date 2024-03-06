@@ -14,7 +14,7 @@ use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 return [
   FrameworkBundle::class => ['all' => true],
   DebugBundle::class => ['dev' => true],
-  TwigBundle::class => ['all' => true],
+  TwigBundle::class => ['dev' => true],
   WebProfilerBundle::class => ['dev' => true, 'test' => true],
   MakerBundle::class => ['dev' => true],
   MonologBundle::class => ['all' => true],
