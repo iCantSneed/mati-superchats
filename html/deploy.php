@@ -60,13 +60,14 @@ return static function (array $context): void {
   $application->setAutoExit(false);
 
   $commands = [
-    'doctrine:migrations:migrate' => ['-n' => true],
-    'cache:clear' => ['-n' => true],
+    ['command' => 'doctrine:migrations:migrate', '-n' => true],
+    ['command' => 'cache:clear', '-n' => true],
+    ['command' => 'cache:clear', '-n' => true, '--env' => 'prodcon'],
   ];
-  foreach ($commands as $command => $args) {
-    $input = new ArrayInput(['command' => $command, ...$args]);
+  foreach ($commands as $params) {
+    $input = new ArrayInput($params);
     $output = new BufferedOutput();
-    echo "Running {$command}\n";
+    echo "Running {$params['command']}\n";
     $result = $application->run($input, $output);
     echo $output->fetch();
     echo "Process finished with code {$result}\n";
