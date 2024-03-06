@@ -8,12 +8,13 @@ use Psr\Log\LoggerInterface;
 
 final class IpcServer
 {
+  use SocketTrait;
+
   private ?\SysvSemaphore $sem = null;
-  private ?\Socket $sock = null;
 
   public function __construct(
-    private IpcParameters $ipcParameters,
-    private LoggerInterface $logger,
+    private readonly IpcParameters $ipcParameters,
+    private readonly LoggerInterface $logger,
   ) {
     // Do nothing.
   }
@@ -32,23 +33,11 @@ final class IpcServer
       return false;
     }
 
-    if (($this->sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP)) === false) {
-      $err = socket_last_error();
-      $this->logger->error('IpcServer: socket_create: failure', [
-        'code' => $err,
-        'reason' => socket_strerror($err),
-      ]);
-
+    if (!$this->socketCreate()) {
       return false;
     }
 
-    if (false === socket_set_option($this->sock, SOL_SOCKET, SO_BROADCAST, 1)) {
-      $err = socket_last_error();
-      $this->logger->error('IpcServer: socket_set_option: failed to set SO_BROADCAST', [
-        'code' => $err,
-        'reason' => socket_strerror($err),
-      ]);
-
+    if (!$this->socketSetOption(SO_BROADCAST, 'SO_BROADCAST')) {
       return false;
     }
 
