@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
 
+use Mati\CommandLoggerConfigurator;
 use Mati\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 
@@ -11,6 +12,7 @@ if (!is_file(dirname(__DIR__).'/vendor/autoload_runtime.php')) {
 require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
 
 return function (array $context) {
+    $GLOBALS[CommandLoggerConfigurator::OVERRIDE_LOGGER_GLOBAL] = true;
     $kernel = new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
 
     return new Application($kernel);

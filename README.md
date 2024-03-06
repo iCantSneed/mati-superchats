@@ -7,7 +7,7 @@ We assume that the app will be deployed to `/srv/mati`.
 * Create a symlink from the public_html equivalent to `/srv/mati/html`.
 * Create a cronjob which every 10 minutes runs
   ```bash
-   php /srv/mati/bin/console mati:stream -vv >>/srv/mati/var/log/console.log 2>&1
+   php /srv/mati/bin/console mati:stream
    ```
 
 ### During Development
