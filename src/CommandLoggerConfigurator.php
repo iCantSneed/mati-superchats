@@ -10,15 +10,13 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 final readonly class CommandLoggerConfigurator
 {
-  public const OVERRIDE_LOGGER_GLOBAL = 'command_override_logger';
-
   private bool $overrideLogger;
 
   public function __construct(
     #[Autowire(service: 'monolog.handler.command')]
     private HandlerInterface $commandHandler
   ) {
-    $this->overrideLogger = ($GLOBALS[self::OVERRIDE_LOGGER_GLOBAL] ?? false) === true;
+    $this->overrideLogger = \PHP_SAPI === 'cli';
   }
 
   public function configure(Logger $logger): void
