@@ -18,7 +18,6 @@
         "symfony/css-selector": "7.0.*",
         "symfony/dom-crawler": "7.0.*",
         "symfony/dotenv": "7.0.*",
-        "symfony/expression-language": "7.0.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "7.0.*",
         "symfony/http-client": "7.0.*",

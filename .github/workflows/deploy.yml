@@ -23,7 +23,7 @@ jobs:
       - name: Dump environment variables
         run: composer dump-env prod
       - name: Zip up required files
-        run: zip -r -9 mati.zip bin/ config/ html/ migrations/ src/ vendor/ .env.local.php composer.json
+        run: zip -r -9 mati.zip bin/ config/ html/ migrations/ src/ vendor/ .env.local.php composer.json -x html/deploy.php
       - name: Deploy archive
         run: |
-          curl -v -k --fail-with-body --stderr - -H "X-Mati-Deploy: ${{ secrets.APP_SECRET }}" -F "archive=@mati.zip" https://mati.x10.mx/index.php/deploy
+          curl -v -k --fail-with-body --stderr - -H "X-Mati-Deploy: ${{ secrets.APP_SECRET }}" -F "archive=@mati.zip" https://mati.x10.mx/deploy.php
