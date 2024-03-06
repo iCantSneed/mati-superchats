@@ -49,6 +49,11 @@ when@prod:
             nested:
                 type: error_log
                 level: debug
+            console:
+                type: console
+                level: debug
+                process_psr_3_messages: false
+                channels: ["!event"]
             deprecation:
                 type: error_log
                 channels: [deprecation]
