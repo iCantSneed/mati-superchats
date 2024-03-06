@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Mati\Rumble;
 
+use Mati\MatiConfiguration;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -15,10 +15,10 @@ final readonly class LivestreamUrlFetcher
 
   public function __construct(
     private HttpClientInterface $httpClient,
+    MatiConfiguration $config,
     private LoggerInterface $logger,
-    ParameterBagInterface $parameterBag
   ) {
-    $this->livestreamLandingUrl = $parameterBag->get('mati.rumble.livestreams');
+    $this->livestreamLandingUrl = $config->livestreamLandingUrl;
   }
 
   public function fetchLivestreamUrl(): ?string

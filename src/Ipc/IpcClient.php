@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mati\Ipc;
 
+use Mati\MatiConfiguration;
 use Psr\Log\LoggerInterface;
 
 final class IpcClient
@@ -11,7 +12,7 @@ final class IpcClient
   use SocketTrait;
 
   public function __construct(
-    private readonly IpcParameters $ipcParameters,
+    private readonly MatiConfiguration $config,
     private readonly LoggerInterface $logger,
   ) {
     // Do nothing.
@@ -27,7 +28,7 @@ final class IpcClient
       return false;
     }
 
-    if (null === $this->sock || false === socket_bind($this->sock, IpcParameters::IPC_ADDRESS, $this->ipcParameters->port)) {
+    if (null === $this->sock || false === socket_bind($this->sock, MatiConfiguration::IPC_ADDRESS, $this->config->ipcPort)) {
       return $this->logError('socket_bind: failure');
     }
 
