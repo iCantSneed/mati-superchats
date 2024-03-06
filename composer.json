@@ -70,6 +70,13 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "lint": [
+            "php-cs-fixer check --allow-risky=yes -v",
+            "psalm"
+        ],
+        "fix": [
+            "php-cs-fixer fix --allow-risky=yes -v"
         ]
     },
     "conflict": {
