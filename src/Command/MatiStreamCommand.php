@@ -52,8 +52,8 @@ final class MatiStreamCommand extends Command
     }
 
     $em = $this->entityManager;
-    foreach ($this->chatClient->readData($chatUrl) as $sseData) {
-      foreach ($this->superchatConverter->extractSuperchats($sseData) as $superchat) {
+    foreach ($this->chatClient->readData($chatUrl) as $rumbleChatData) {
+      foreach ($this->superchatConverter->extractSuperchats($rumbleChatData) as $superchat) {
         $this->logger->info('Received superchat', ['superchat' => $superchat]);
 
         try {

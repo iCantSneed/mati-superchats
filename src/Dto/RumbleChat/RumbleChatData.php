@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Mati\Rumble\Sse;
+namespace Mati\Dto\RumbleChat;
 
 use Symfony\Component\Serializer\Attribute\SerializedPath;
 
@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\Attribute\SerializedPath;
  *
  * @psalm-suppress MissingConstructor
  */
-final class SseData
+final class RumbleChatData
 {
   /** @var Message[] */
   #[SerializedPath('[data][messages]')]

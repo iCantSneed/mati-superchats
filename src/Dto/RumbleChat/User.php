@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Mati\Rumble\Sse;
+namespace Mati\Dto\RumbleChat;
 
 /**
  * @psalm-suppress MissingConstructor

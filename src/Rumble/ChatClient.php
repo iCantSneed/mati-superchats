@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Mati\Rumble;
 
-use Mati\Rumble\Sse\SseData;
+use Mati\Dto\RumbleChat\RumbleChatData;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\Chunk\ServerSentEvent;
 use Symfony\Component\HttpClient\EventSourceHttpClient;
@@ -25,7 +25,7 @@ final readonly class ChatClient
   }
 
   /**
-   * @return iterable<SseData>
+   * @return iterable<RumbleChatData>
    */
   public function readData(string $chatUrl): iterable
   {
@@ -55,10 +55,10 @@ final readonly class ChatClient
         }
 
         try {
-          $sseData = $this->serializer->deserialize($rawData, SseData::class, 'json');
-          $this->logger->debug('ChatClient: deserialized chunk', ['sseData' => $sseData]);
+          $rumbleChatData = $this->serializer->deserialize($rawData, RumbleChatData::class, 'json');
+          $this->logger->debug('ChatClient: deserialized chunk', ['rumbleChatData' => $rumbleChatData]);
 
-          yield $sseData;
+          yield $rumbleChatData;
         } catch (UnexpectedValueException $e) {
           $this->logger->error('ChatClient: chunk cannot be deserialized', ['exception' => $e]);
 

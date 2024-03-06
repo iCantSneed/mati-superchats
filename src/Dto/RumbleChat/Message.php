@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Mati\Rumble\Sse;
+namespace Mati\Dto\RumbleChat;
 
 use Symfony\Component\Serializer\Attribute\SerializedPath;
 
