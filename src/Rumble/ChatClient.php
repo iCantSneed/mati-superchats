@@ -50,6 +50,9 @@ final readonly class ChatClient
 
         $rawData = $chunk->getData();
         $this->logger->debug('ChatClient: got SSE data', ['rawData' => $rawData]);
+        if (empty($rawData)) {
+          continue;
+        }
 
         try {
           $sseData = $this->serializer->deserialize($rawData, SseData::class, 'json');
