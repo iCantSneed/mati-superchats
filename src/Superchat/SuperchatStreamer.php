@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Mati\Superchat;
 
-use Mati\Ipc\IpcClient;
+use Mati\Ipc\IpcClientInterface;
 
 final readonly class SuperchatStreamer
 {
-  public function __construct(private IpcClient $ipcClient)
-  {
+  public function __construct(
+    private IpcClientInterface $ipcClient,
+    private FlusherInterface $flusher,
+  ) {
     // Do nothing.
   }
 
@@ -20,26 +22,18 @@ final readonly class SuperchatStreamer
     }
 
     echo "\n"; // TODO send cached superchats
-    self::flush();
+    $this->flusher->flush();
     foreach ($this->ipcClient->receive() as $message) {
       $lines = explode(separator: "\n", string: $message);
       foreach ($lines as $line) {
         echo "data: {$line}\n";
       }
       echo "\n";
-      self::flush();
+      $this->flusher->flush();
 
       if (0 !== connection_aborted()) {
         return;
       }
     }
-  }
-
-  private static function flush(): void
-  {
-    while (ob_get_level() > 0) {
-      ob_end_flush();
-    }
-    flush();
   }
 }

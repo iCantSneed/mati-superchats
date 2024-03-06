@@ -1,0 +1,13 @@
+<?php
+namespace Mati\Tests\Unit\Rumble;
+
+use Mati\Rumble\RssLivestreamUrlFetcher;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+
+#[CoversClass(RssLivestreamUrlFetcher::class)]
+class RssLivestreamUrlFetcherTest extends TestCase
+{
+  // TODO this test will be more useful once we'll be able to provide a HTTP client to Simplepie
+  // (which should be possible in the next release of Simplepie)
+}

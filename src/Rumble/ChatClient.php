@@ -14,22 +14,21 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final readonly class ChatClient
 {
-  private const MAX_RETRY_COUNT = 2;
-
   private EventSourceHttpClient $client;
 
   public function __construct(
     private SerializerInterface $serializer,
-    private LoggerInterface $logger,
     HttpClientInterface $httpClient,
+    private LoggerInterface $logger,
+    private int $maxRetryCount = 2,
   ) {
     $this->client = new EventSourceHttpClient($httpClient);
   }
 
   /**
-   * @return iterable<RumbleChatData>
+   * @return \Iterator<RumbleChatData>
    */
-  public function readData(string $chatUrl): iterable
+  public function readData(string $chatUrl): \Iterator
   {
     $retryCount = 0;
     while (true) {
@@ -37,10 +36,7 @@ final readonly class ChatClient
       foreach ($this->client->stream($source, 270) as $chunk) { // 4.5 minutes
         if ($chunk->isTimeout()) {
           $this->logger->warning('ChatClient: chunk timeout');
-          ++$retryCount;
-          if ($retryCount >= self::MAX_RETRY_COUNT) {
-            $this->logger->notice('ChatClient: max retry count reached, closing connection');
-
+          if ($this->shouldCloseConnection($retryCount)) {
             return;
           }
 
@@ -80,12 +76,21 @@ final readonly class ChatClient
       }
 
       $this->logger->warning('ChatClient: connection was closed');
-      ++$retryCount;
-      if ($retryCount >= self::MAX_RETRY_COUNT) {
-        $this->logger->notice('ChatClient: max retry count reached, closing connection');
-
+      if ($this->shouldCloseConnection($retryCount)) {
         return;
       }
     }
+  }
+
+  private function shouldCloseConnection(int &$retryCount): bool
+  {
+    ++$retryCount;
+    if ($retryCount >= $this->maxRetryCount) {
+      $this->logger->notice('ChatClient: max retry count reached, closing connection');
+
+      return true;
+    }
+
+    return false;
   }
 }

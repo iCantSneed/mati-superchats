@@ -8,7 +8,7 @@ use Mati\MatiConfiguration;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
-final class IpcClient
+final class IpcClient implements IpcClientInterface
 {
   use SocketTrait;
 

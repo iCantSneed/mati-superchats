@@ -10,9 +10,9 @@ use Mati\Entity\Superchat;
 final readonly class SuperchatConverter
 {
   /**
-   * @return iterable<Superchat>
+   * @return \Iterator<Superchat>
    */
-  public function extractSuperchats(RumbleChatData $rumbleChatData): iterable
+  public function extractSuperchats(RumbleChatData $rumbleChatData): \Iterator
   {
     $users = array_column($rumbleChatData->users, 'username', 'id');
 
