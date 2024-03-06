@@ -8,6 +8,7 @@ use Symfony\Component\Serializer\Attribute\SerializedPath;
 
 /**
  * FIXME assign empty array because invalid JSON will be incorrectly deserialized.
+ *
  * @psalm-suppress MissingConstructor
  */
 final class SseData
