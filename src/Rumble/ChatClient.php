@@ -37,7 +37,7 @@ final readonly class ChatClient
         }
 
         if ($chunk->isLast()) {
-          $this->logger->info('ChatClient: no more data');
+          $this->logger->notice('ChatClient: no more data');
 
           return;
         }
