@@ -54,12 +54,13 @@ final class MatiStreamCommand extends Command
     $em = $this->entityManager;
     foreach ($this->chatClient->readData($chatUrl) as $rumbleChatData) {
       foreach ($this->superchatConverter->extractSuperchats($rumbleChatData) as $superchat) {
-        $this->logger->info('Received superchat', ['superchat' => $superchat]);
+        $superchatJson = $this->superchatRenderer->toJson($superchat);
+        $this->logger->info('Received superchat', ['superchat' => $superchatJson]);
 
         try {
           $em->persist($superchat);
           $em->flush();
-          $this->ipcServer->send($this->superchatRenderer->toJson($superchat));
+          $this->ipcServer->send($superchatJson);
         } catch (UniqueConstraintViolationException $e) {
           $this->logger->warning('Superchat already exists', ['exception' => $e]);
           $em = new EntityManager($em->getConnection(), $em->getConfiguration());
