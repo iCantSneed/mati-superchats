@@ -22,18 +22,7 @@ jobs:
         run: composer install --no-dev --optimize-autoloader
       - name: Dump environment variables
         run: composer dump-env prod
-      # - name: Zip up required files
-      #   run: zip -r -9 mati.zip bin/ config/ html/ migrations/ src/ vendor/ .env.local.php composer.json
-      - name: 'Create and upload artifact [temp]'
-        uses: actions/upload-artifact@v4
-        with:
-          name: mati
-          path: |
-            bin/
-            config/
-            migrations/
-            src/
-            vendor/
-            .env.local.php
-            composer.json
-          if-no-files-found: error
+      - name: Zip up required files
+        run: zip -r -9 mati.zip bin/ config/ html/ migrations/ src/ vendor/ .env.local.php composer.json
+      - name: Deploy archive
+        run: 'curl -v -k -H "X-Mati-Deploy: ${{ secrets.APP_SECRET }}" -F "archive=@mati.zip" https://mati.x10.mx/index.php/deploy'
