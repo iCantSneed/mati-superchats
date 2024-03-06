@@ -19,14 +19,26 @@ final readonly class SuperchatStreamer
       return;
     }
 
-    flush();
+    self::flush();
     foreach ($this->ipcClient->receive() as $message) {
       $lines = explode(separator: "\n", string: $message);
       foreach ($lines as $line) {
         echo "data: {$line}\n";
       }
       echo "\n";
-      flush();
+      self::flush();
+
+      if (0 !== connection_aborted()) {
+        return;
+      }
     }
+  }
+
+  private static function flush(): void
+  {
+    while (ob_get_level() > 0) {
+      ob_end_flush();
+    }
+    flush();
   }
 }
