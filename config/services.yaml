@@ -7,6 +7,7 @@ parameters:
     mati.ipc.port: 65123
     mati.ipc.semkey: 0x829C796E
     mati.rumble.livestreams: 'https://rumble.com/c/madattheinternet/livestreams'
+    mati.rumble.livestreams_rss: 'https://openrss.org/rumble.com/c/madattheinternet'
 
 services:
     # default configuration for services in *this* file
