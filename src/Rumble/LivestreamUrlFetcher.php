@@ -6,19 +6,19 @@ namespace Mati\Rumble;
 
 use Mati\MatiConfiguration;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final readonly class LivestreamUrlFetcher
 {
-  private string $livestreamLandingUrl;
-
   public function __construct(
     private HttpClientInterface $httpClient,
-    MatiConfiguration $config,
     private LoggerInterface $logger,
+    #[Autowire(MatiConfiguration::PARAM_LIVESTREAM_LANDING_URL)]
+    private string $livestreamLandingUrl,
   ) {
-    $this->livestreamLandingUrl = $config->livestreamLandingUrl;
+    // Do nothing.
   }
 
   public function fetchLivestreamUrl(): ?string
