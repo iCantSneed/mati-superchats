@@ -7,19 +7,20 @@ use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use SimplePie\SimplePie;
 use Symfony\Component\Cache\Psr16Cache;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 final readonly class RssLivestreamUrlFetcher
 {
   private SimplePie $simplepie;
 
   public function __construct(
-    MatiConfiguration $config,
     CacheItemPoolInterface $cache,
     private LoggerInterface $logger,
+    #[Autowire(MatiConfiguration::PARAM_LIVESTREAM_RSS_URL)] string $livestreamRssUrl,
   ) {
     $this->simplepie = new SimplePie();
 
-    $this->simplepie->set_feed_url($config->livestreamsRssUrl);
+    $this->simplepie->set_feed_url($livestreamRssUrl);
     $this->simplepie->set_useragent('curl/7.88');
     $this->simplepie->set_cache(new Psr16Cache($cache));
   }
