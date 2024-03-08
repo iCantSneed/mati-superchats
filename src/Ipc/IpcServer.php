@@ -6,6 +6,7 @@ namespace Mati\Ipc;
 
 use Mati\MatiConfiguration;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 final class IpcServer
 {
@@ -14,15 +15,18 @@ final class IpcServer
   private ?\SysvSemaphore $sem = null;
 
   public function __construct(
-    private readonly MatiConfiguration $config,
     private readonly LoggerInterface $logger,
+    #[Autowire(MatiConfiguration::PARAM_IPC_PORT)]
+    private readonly int $ipcPort,
+    #[Autowire(MatiConfiguration::PARAM_IPC_SEMKEY)]
+    private readonly int $ipcSemkey,
   ) {
     // Do nothing.
   }
 
   public function init(): bool
   {
-    if (($this->sem = sem_get($this->config->ipcSemkey)) === false) {
+    if (($this->sem = sem_get($this->ipcSemkey)) === false) {
       $this->logger->error('IpcServer: sem_get: failure');
 
       return false;
@@ -55,7 +59,7 @@ final class IpcServer
       \strlen($message),
       0,
       MatiConfiguration::IPC_ADDRESS,
-      $this->config->ipcPort
+      $this->ipcPort
     );
     $this->logger->debug('IpcServer: sent message', [
       'message' => $message,
