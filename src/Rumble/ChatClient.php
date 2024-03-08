@@ -32,8 +32,8 @@ final readonly class ChatClient
   public function readData(string $chatUrl): iterable
   {
     $retryCount = 0;
-    $source = $this->client->connect($chatUrl);
     while (true) {
+      $source = $this->client->connect($chatUrl);
       foreach ($this->client->stream($source, 270) as $chunk) { // 4.5 minutes
         if ($chunk->isTimeout()) {
           $this->logger->warning('ChatClient: chunk timeout');
@@ -53,13 +53,13 @@ final readonly class ChatClient
           break;
         }
 
-        $retryCount = 0;
-
         if (!$chunk instanceof ServerSentEvent) {
           $this->logger->debug('ChatClient: chunk is not a SSE');
 
           continue;
         }
+
+        $retryCount = 0;
 
         $rawData = $chunk->getData();
         $this->logger->debug('ChatClient: got SSE data', ['rawData' => $rawData]);
