@@ -14,6 +14,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final readonly class ChatClient
 {
+  private const MAX_RETRY_COUNT = 2;
+
   private EventSourceHttpClient $client;
 
   public function __construct(
@@ -29,17 +31,26 @@ final readonly class ChatClient
    */
   public function readData(string $chatUrl): iterable
   {
-    $source = $this->client->connect($chatUrl);
-    while ($source) {
+    $retryCount = 0;
+    while (true) {
+      $source = $this->client->connect($chatUrl);
       foreach ($this->client->stream($source, 270) as $chunk) { // 4.5 minutes
         if ($chunk->isTimeout()) {
+          $this->logger->warning('ChatClient: chunk timeout');
+          ++$retryCount;
+          if ($retryCount >= self::MAX_RETRY_COUNT) {
+            $this->logger->notice('ChatClient: max retry count reached, closing connection');
+
+            return;
+          }
+
           continue;
         }
 
         if ($chunk->isLast()) {
           $this->logger->notice('ChatClient: no more data');
 
-          return;
+          break;
         }
 
         if (!$chunk instanceof ServerSentEvent) {
@@ -47,6 +58,8 @@ final readonly class ChatClient
 
           continue;
         }
+
+        $retryCount = 0;
 
         $rawData = $chunk->getData();
         $this->logger->debug('ChatClient: got SSE data', ['rawData' => $rawData]);
@@ -64,6 +77,14 @@ final readonly class ChatClient
 
           continue;
         }
+      }
+
+      $this->logger->warning('ChatClient: connection was closed');
+      ++$retryCount;
+      if ($retryCount >= self::MAX_RETRY_COUNT) {
+        $this->logger->notice('ChatClient: max retry count reached, closing connection');
+
+        return;
       }
     }
   }
