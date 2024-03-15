@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mati\Rumble;
 
 use Mati\MatiConfiguration;
@@ -16,7 +18,8 @@ final readonly class RssLivestreamUrlFetcher
   public function __construct(
     CacheItemPoolInterface $cache,
     private LoggerInterface $logger,
-    #[Autowire(MatiConfiguration::PARAM_LIVESTREAM_RSS_URL)] string $livestreamRssUrl,
+    #[Autowire(MatiConfiguration::PARAM_LIVESTREAM_RSS_URL)]
+    string $livestreamRssUrl,
   ) {
     $this->simplepie = new SimplePie();
 
@@ -30,28 +33,33 @@ final readonly class RssLivestreamUrlFetcher
     $result = $this->simplepie->init();
     if (!$result) {
       $this->logger->error('RssLivestreamUrlFetcher: simplepie init failure', ['error' => $this->simplepie->error()]);
+
       return null;
     }
 
-    $cached = $this->simplepie->get_raw_data() === false;
+    $cached = false === $this->simplepie->get_raw_data();
     if ($cached) {
       $this->logger->notice('RssLivestreamUrlFetcher: RSS feed not updated since last cached');
+
       return null;
     }
 
     $item = $this->simplepie->get_item(0);
-    if ($item === null) {
+    if (null === $item) {
       $this->logger->error('RssLivestreamUrlFetcher: RSS feed is empty');
+
       return null;
     }
 
     $livestreamUrl = $item->get_permalink();
-    if ($livestreamUrl === null) {
+    if (null === $livestreamUrl) {
       $this->logger->error('RssLivestreamUrlFetcher: RSS item has no permalink');
+
       return null;
     }
 
     $this->logger->debug('RssLivestreamUrlFetcher: got livestream URL', ['livestreamUrl' => $livestreamUrl]);
+
     return $livestreamUrl;
   }
 }

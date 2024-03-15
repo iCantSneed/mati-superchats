@@ -17,8 +17,6 @@
         "psr/simple-cache": "^3.0",
         "simplepie/simplepie": "^1.8",
         "symfony/console": "7.0.*",
-        "symfony/css-selector": "7.0.*",
-        "symfony/dom-crawler": "7.0.*",
         "symfony/dotenv": "7.0.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "7.0.*",
