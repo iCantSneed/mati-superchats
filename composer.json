@@ -72,6 +72,8 @@
             "@auto-scripts"
         ],
         "lint": [
+            "bin/console lint:container",
+            "bin/console lint:yaml config/",
             "php-cs-fixer check --allow-risky=yes -v",
             "psalm"
         ],
