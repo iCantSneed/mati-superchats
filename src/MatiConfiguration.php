@@ -11,5 +11,4 @@ final readonly class MatiConfiguration
   public const PARAM_LIVESTREAM_LANDING_URL = '%env(LIVESTREAM_LANDING_URL)%';
   public const PARAM_LIVESTREAM_RSS_URL = '%env(LIVESTREAM_RSS_URL)%';
   public const PARAM_IPC_PORT = '%env(IPC_PORT)%';
-  public const PARAM_IPC_SEMKEY = '%env(IPC_SEMKEY)%';
 }

@@ -17,12 +17,15 @@ use Mati\Superchat\SuperchatRenderer;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand('mati:stream')]
 final class MatiStreamCommand extends Command
 {
+  use LockableTrait;
+
   public function __construct(
     private IpcServer $ipcServer,
     private RssLivestreamUrlFetcher $livestreamUrlFetcher,
@@ -39,6 +42,12 @@ final class MatiStreamCommand extends Command
 
   protected function execute(InputInterface $input, OutputInterface $output): int
   {
+    if (!$this->lock()) {
+      $this->logger->notice('An instance of this command is already running');
+
+      return Command::FAILURE;
+    }
+
     if (!$this->ipcServer->init()) {
       return Command::FAILURE;
     }
