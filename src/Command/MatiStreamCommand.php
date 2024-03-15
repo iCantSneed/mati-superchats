@@ -11,7 +11,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Mati\Ipc\IpcServer;
 use Mati\Rumble\ChatClient;
 use Mati\Rumble\ChatUrlFetcher;
-use Mati\Rumble\LivestreamUrlFetcher;
+use Mati\Rumble\RssLivestreamUrlFetcher;
 use Mati\Superchat\SuperchatConverter;
 use Mati\Superchat\SuperchatRenderer;
 use Psr\Log\LoggerInterface;
@@ -25,7 +25,7 @@ final class MatiStreamCommand extends Command
 {
   public function __construct(
     private IpcServer $ipcServer,
-    private LivestreamUrlFetcher $livestreamUrlFetcher,
+    private RssLivestreamUrlFetcher $livestreamUrlFetcher,
     private ChatUrlFetcher $chatUrlFetcher,
     private ChatClient $chatClient,
     private SuperchatConverter $superchatConverter,
