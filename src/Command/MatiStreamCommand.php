@@ -8,6 +8,7 @@ use Mati\Ipc\IpcServer;
 use Mati\Rumble\ChatClient;
 use Mati\Rumble\ChatUrlFetcher;
 use Mati\Rumble\RssLivestreamUrlFetcher;
+use Mati\Superchat\SuperchatCache;
 use Mati\Superchat\SuperchatConverter;
 use Mati\Superchat\SuperchatResettableRepository;
 use Psr\Log\LoggerInterface;
@@ -31,6 +32,7 @@ final class MatiStreamCommand extends Command
     private readonly SuperchatConverter $superchatConverter,
     private readonly SerializerInterface $serializer,
     private readonly SuperchatResettableRepository $repository,
+    private readonly SuperchatCache $superchatCache,
     private readonly LoggerInterface $logger,
   ) {
     parent::__construct();
@@ -66,6 +68,7 @@ final class MatiStreamCommand extends Command
         }
 
         $this->ipcServer->send($superchatJson);
+        $this->superchatCache->storeSuperchat($superchat);
       }
     }
 
