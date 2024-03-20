@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MATI Superchats</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <style type="text/css">
+      .sticky { position: sticky; top: 0; background-color: white; }
+      .title { border-bottom: 2px; }
+    </style>
+  </head>
+  <body>
+    <div class="sticky">
+      <h1 class="title">
+        MATI Superchats
+        <span id="conn-ind"></span>
+      </h1>
+    </div>
+    <script type="text/javascript">
+      (function () {
+        const connIndElement = document.getElementById('conn-ind');
+        let loadingIndicatorOffset = -1;
+        const loadingTask = setInterval(() => {
+          loadingIndicatorOffset = (loadingIndicatorOffset + 1) % 12;
+          connIndElement.innerText = String.fromCodePoint(0x1f550 + loadingIndicatorOffset);
+        }, 250);
+
+        const eventSource = new EventSource("/api/live");
+        eventSource.onopen = () => {
+          clearInterval(loadingTask);
+          connIndElement.innerText = '🟢';
+        };
+        eventSource.onerror = (e) => {
+          clearInterval(loadingTask);
+          console.error(e);
+          connIndElement.innerText = '🔴';
+        };
+      })();
+    </script>
+  </body>
+</html>

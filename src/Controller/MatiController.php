@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class MatiController extends AbstractController
 {
-  #[Route('/live')]
+  #[Route('/api/live')]
   public function live(SuperchatStreamer $superchatStreamer): Response
   {
     $response = new StreamedResponse();
