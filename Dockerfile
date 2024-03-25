@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.3-apache
 
 RUN \
   (curl -sS https://getcomposer.org/installer | php) && mv composer.phar /usr/local/bin/composer && rm -f composer-setup.php && \
