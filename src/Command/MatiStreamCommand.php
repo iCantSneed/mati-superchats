@@ -38,6 +38,7 @@ final class MatiStreamCommand extends Command
     parent::__construct();
   }
 
+  #[\Override]
   protected function execute(InputInterface $input, OutputInterface $output): int
   {
     if (!$this->lock()) {

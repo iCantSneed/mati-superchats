@@ -19,6 +19,7 @@ final readonly class SuperchatStreamer
       return;
     }
 
+    echo "\n"; // TODO send cached superchats
     self::flush();
     foreach ($this->ipcClient->receive() as $message) {
       $lines = explode(separator: "\n", string: $message);

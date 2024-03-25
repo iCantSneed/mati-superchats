@@ -14,7 +14,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final readonly class ChatClient
 {
-  private const MAX_RETRY_COUNT = 2;
+  private const int MAX_RETRY_COUNT = 2;
 
   private EventSourceHttpClient $client;
 
