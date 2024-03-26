@@ -6,4 +6,5 @@ RUN \
   apt install -y git libxml2-dev libzip-dev symfony-cli unzip zip && \
   docker-php-ext-install intl opcache pdo_mysql sockets sysvsem xml zip && \
   pecl install apcu ast && docker-php-ext-enable apcu ast && \
-  a2enmod rewrite
+  a2enmod rewrite && \
+  composer global require --dev friendsofphp/php-cs-fixer psalm/plugin-symfony vimeo/psalm
