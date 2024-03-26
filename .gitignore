@@ -1,5 +1,6 @@
 .devcontainer/
 .deploykey
+.htdeployment
 
 ###> symfony/framework-bundle ###
 /.env.local
