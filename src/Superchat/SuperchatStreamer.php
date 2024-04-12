@@ -19,14 +19,17 @@ final readonly class SuperchatStreamer
       return;
     }
 
-    echo "\n"; // TODO send cached superchats
+    // TODO send cached superchats
     self::flush();
+
     foreach ($this->ipcClient->receive() as $message) {
-      $lines = explode(separator: "\n", string: $message);
-      foreach ($lines as $line) {
-        echo "data: {$line}\n";
+      if (null !== $message) {
+        $lines = explode(separator: "\n", string: $message);
+        foreach ($lines as $line) {
+          echo "data: {$line}\n";
+        }
       }
-      echo "\n";
+
       self::flush();
 
       if (0 !== connection_aborted()) {
@@ -37,6 +40,7 @@ final readonly class SuperchatStreamer
 
   private static function flush(): void
   {
+    echo "\n";
     while (ob_get_level() > 0) {
       ob_end_flush();
     }

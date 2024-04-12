@@ -33,11 +33,14 @@ trait SocketTrait
     return true;
   }
 
-  private function socketSetOption(int $option, string $optionText): bool
+  /**
+   * @param array|int $value
+   */
+  private function socketSetOption(int $option, string $optionText, $value = 1): bool
   {
     \assert(null !== $this->sock);
 
-    return socket_set_option($this->sock, SOL_SOCKET, $option, 1)
+    return socket_set_option($this->sock, SOL_SOCKET, $option, $value)
       || $this->logError('socket_set_option: failed to set '.$optionText);
   }
 }

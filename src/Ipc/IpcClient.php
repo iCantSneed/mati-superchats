@@ -30,6 +30,10 @@ final class IpcClient
       return false;
     }
 
+    if (!$this->socketSetOption(SO_RCVTIMEO, 'SO_RCVTIMEO', ['sec' => 30, 'usec' => 0])) {
+      return false;
+    }
+
     if (null === $this->sock || false === socket_bind($this->sock, MatiConfiguration::IPC_ADDRESS, $this->ipcPort)) {
       return $this->logError('socket_bind: failure');
     }
@@ -38,7 +42,7 @@ final class IpcClient
   }
 
   /**
-   * @return iterable<string>
+   * @return iterable<?string>
    */
   public function receive(): iterable
   {
@@ -49,10 +53,13 @@ final class IpcClient
     while (true) {
       if (false === socket_recvfrom($this->sock, $message, 50000, 0, $host, $port)) {
         $err = socket_last_error();
-        $this->logger->error('IpcClient: socket_recvfrom: failure', [
-          'code' => $err,
-          'reason' => socket_strerror($err),
-        ]);
+        if (SOCKET_EAGAIN === $err) {
+          $this->logger->debug('IpcClient: no data received');
+
+          yield null;
+        } else {
+          $this->logError('socket_recvfrom: failure');
+        }
 
         continue;
       }
