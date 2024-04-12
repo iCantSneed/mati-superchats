@@ -16,6 +16,7 @@ final readonly class RssLivestreamUrlFetcher
   private SimplePie $simplepie;
 
   public function __construct(
+    private LivestreamUrlCache $livestreamUrlCache,
     CacheItemPoolInterface $cache,
     private LoggerInterface $logger,
     #[Autowire(MatiConfiguration::PARAM_LIVESTREAM_RSS_URL)]
@@ -59,6 +60,12 @@ final readonly class RssLivestreamUrlFetcher
     }
 
     $this->logger->debug('RssLivestreamUrlFetcher: got livestream URL', ['livestreamUrl' => $livestreamUrl]);
+
+    if ($this->livestreamUrlCache->getCachedLivestreamUrl() === $livestreamUrl) {
+      $this->logger->notice('RssLivestreamUrlFetcher: livestream URL matches cached URL');
+
+      return null;
+    }
 
     return $livestreamUrl;
   }
