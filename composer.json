@@ -19,6 +19,7 @@
         "simplepie/simplepie": "^1.8",
         "symfony/console": "7.0.*",
         "symfony/dotenv": "7.0.*",
+        "symfony/flex": "^2",
         "symfony/framework-bundle": "7.0.*",
         "symfony/http-client": "7.0.*",
         "symfony/lock": "7.0.*",
@@ -31,7 +32,6 @@
     },
     "require-dev": {
         "symfony/debug-bundle": "7.0.*",
-        "symfony/flex": "^2",
         "symfony/maker-bundle": "^1.55",
         "symfony/stopwatch": "7.0.*",
         "symfony/web-profiler-bundle": "7.0.*"
