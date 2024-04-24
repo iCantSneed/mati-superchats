@@ -14,7 +14,9 @@ $newComposerJson = [
   'config' => $composerJson['config'],
   'scripts' => ['post-install-cmd' => ['bin/console cache:clear']],
 ];
-$newComposerJson['config']['allow-plugins']['symfony/flex'] = false;
+foreach ($newComposerJson['config']['allow-plugins'] as &$value) {
+  $value = false;
+}
 $newComposerJsonRaw = json_encode($newComposerJson, JSON_UNESCAPED_SLASHES);
 $composerJsonFile->fseek(0);
 $composerJsonFile->fwrite($newComposerJsonRaw);
