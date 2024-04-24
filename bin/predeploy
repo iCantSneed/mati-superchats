@@ -1,0 +1,18 @@
+#!/usr/bin/env php
+<?php
+
+$composerJsonFile = new \SplFileObject('composer.json', 'r+');
+$composerJsonRaw = $composerJsonFile->fread($composerJsonFile->getSize());
+$composerJson = json_decode($composerJsonRaw, true);
+\assert(\is_array($composerJson));
+\assert(isset($composerJson['type'], $composerJson['require'], $composerJson['autoload']));
+$newComposerJson = [
+  'type' => $composerJson['type'],
+  'require' => $composerJson['require'],
+  'autoload' => $composerJson['autoload'],
+  'scripts' => ['post-install-cmd' => ['bin/console cache:clear']],
+];
+$newComposerJsonRaw = json_encode($newComposerJson, JSON_UNESCAPED_SLASHES);
+$composerJsonFile->fseek(0);
+$composerJsonFile->fwrite($newComposerJsonRaw);
+$composerJsonFile->ftruncate(\strlen($newComposerJsonRaw));
