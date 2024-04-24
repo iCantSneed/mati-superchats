@@ -56,6 +56,7 @@ if (!isset($_GLOBALS['mati_deployed'])) {
 }
 
 return static function (array $context): void {
+  chdir('..');
   putenv('COMPOSER_HOME='.__DIR__.'/var/cache/composer');
   $input = new ArrayInput(['command' => 'install', '--no-dev' => true, '--optimize-autoloader' => true]);
   $application = new ComposerApplication();
@@ -67,6 +68,7 @@ return static function (array $context): void {
     ob_end_flush();
   }
   flush();
+  chdir('html');
 
   $kernel = new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
   $application = new Application($kernel);
