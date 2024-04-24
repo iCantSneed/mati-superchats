@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mati\Superchat;
 
+use Mati\Dto\SuperchatsData;
 use Mati\Entity\Superchat;
 use Mati\MatiConfiguration;
 use Psr\Cache\CacheItemInterface;
@@ -25,43 +26,37 @@ final readonly class SuperchatCache
   public function storeSuperchat(Superchat $superchat): void
   {
     $superchatsCacheItem = $this->cache->getItem($this->cacheKey);
-    $superchats = $this->getSuperchatsFromCache($superchatsCacheItem);
-    $superchats[] = $superchat;
-    $superchatsCacheItem->set($superchats);
+    $superchatsData = $this->getSuperchatsDataFromCache($superchatsCacheItem);
+    $superchatsData->superchats[] = $superchat;
+    $superchatsCacheItem->set($superchatsData);
     $this->cache->save($superchatsCacheItem);
   }
 
-  private function getSuperchatsFromCache(CacheItemInterface $superchatsCacheItem): array
+  private function getSuperchatsDataFromCache(CacheItemInterface $superchatsCacheItem): SuperchatsData
   {
-    $superchats = $superchatsCacheItem->get();
-    if (!\is_array($superchats)) {
-      $this->logger->notice('SuperchatCache: cache miss or superchats is not an array, clearing cache');
+    $superchatsData = $superchatsCacheItem->get();
+    if (!$superchatsData instanceof SuperchatsData) {
+      $this->logger->notice('SuperchatCache: cache miss or superchats is not a valid object, clearing cache');
 
-      return [];
+      return new SuperchatsData([]);
     }
 
-    if (empty($superchats)) {
+    if (empty($superchatsData->superchats)) {
       $this->logger->info('SuperchatCache: superchats array is empty');
 
-      return [];
+      return $superchatsData;
     }
 
-    $oldestSuperchat = reset($superchats);
-    if (!$oldestSuperchat instanceof Superchat) {
-      $this->logger->error('SuperchatCache: superchats array has non-superchat elements, clearing cache');
-
-      return [];
-    }
-
+    $oldestSuperchat = reset($superchatsData->superchats);
     $oldestSuperchatCreatedInterval = $oldestSuperchat->getCreated()?->diff(new \DateTimeImmutable(), true);
     if (null === $oldestSuperchatCreatedInterval || $oldestSuperchatCreatedInterval->days >= 1) {
       $this->logger->info('SuperchatCache: superchats cache is stale, clearing cache');
 
-      return [];
+      return new SuperchatsData([]);
     }
 
-    $this->logger->debug('SuperchatCache: cache hit', ['superchats' => $superchats]);
+    $this->logger->debug('SuperchatCache: cache hit', ['superchatsData' => $superchatsData]);
 
-    return $superchats;
+    return $superchatsData;
   }
 }
