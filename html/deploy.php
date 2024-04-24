@@ -76,6 +76,7 @@ return static function (array $context): void {
 
   $commands = [
     ['command' => 'doctrine:migrations:migrate', '-n' => true],
+    ['command' => 'cache:clear', '-n' => true],
   ];
   foreach ($commands as $params) {
     $input = new ArrayInput($params);

@@ -12,7 +12,6 @@ $newComposerJson = [
   'require' => $composerJson['require'],
   'autoload' => $composerJson['autoload'],
   'config' => $composerJson['config'],
-  'scripts' => ['post-install-cmd' => ['bin/console cache:clear']],
 ];
 foreach ($newComposerJson['config']['allow-plugins'] as &$value) {
   $value = false;
