@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Composer\Console\Application as ComposerApplication;
 use Mati\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -55,6 +56,20 @@ if (!isset($_GLOBALS['mati_deployed'])) {
 }
 
 return static function (array $context): void {
+  chdir('..');
+  putenv('COMPOSER_HOME='.dirname(__DIR__).'/var/cache/composer');
+  $input = new ArrayInput(['command' => 'install', '--no-dev' => true, '--optimize-autoloader' => true]);
+  $application = new ComposerApplication();
+  $application->setAutoExit(false);
+  $application->setCatchExceptions(false);
+  echo "Running composer install\n";
+  $application->run($input);
+  while (ob_get_level() > 0) {
+    ob_end_flush();
+  }
+  flush();
+  chdir('html');
+
   $kernel = new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
   $application = new Application($kernel);
   $application->setAutoExit(false);
