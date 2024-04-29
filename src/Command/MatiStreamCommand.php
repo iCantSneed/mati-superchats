@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mati\Command;
 
 use Mati\Ipc\IpcServer;
+use Mati\Repository\StreamRepository;
 use Mati\Rumble\ChatClient;
 use Mati\Rumble\ChatUrlFetcher;
 use Mati\Rumble\RssLivestreamUrlFetcher;
@@ -33,6 +34,7 @@ final class MatiStreamCommand extends Command
     private readonly SerializerInterface $serializer,
     private readonly SuperchatResettableRepository $repository,
     private readonly SuperchatCache $superchatCache,
+    private readonly StreamRepository $streamRepository,
     private readonly LoggerInterface $logger,
   ) {
     parent::__construct();
@@ -55,12 +57,14 @@ final class MatiStreamCommand extends Command
       return Command::FAILURE;
     }
 
-    if (($chatUrl = $this->chatUrlFetcher->fetchChatUrl($livestreamUrl)) === null) {
+    if (($chatUrlAndId = $this->chatUrlFetcher->fetchChatUrl($livestreamUrl)) === null) {
       return Command::FAILURE;
     }
+    [$chatUrl, $streamId] = $chatUrlAndId;
+    $stream = $this->streamRepository->getOrCreateStream($streamId, new \DateTimeImmutable());
 
     foreach ($this->chatClient->readData($chatUrl) as $rumbleChatData) {
-      foreach ($this->superchatConverter->extractSuperchats($rumbleChatData) as $superchat) {
+      foreach ($this->superchatConverter->extractSuperchats($rumbleChatData, $stream) as $superchat) {
         $superchatJson = $this->serializer->serialize($superchat, 'json');
         $this->logger->info('Received superchat', ['superchat' => $superchatJson]);
 

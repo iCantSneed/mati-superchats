@@ -17,7 +17,10 @@ final readonly class ChatUrlFetcher
     // Do nothing.
   }
 
-  public function fetchChatUrl(string $livestreamUrl): ?string
+  /**
+   * @return ?list{string,int}
+   */
+  public function fetchChatUrl(string $livestreamUrl): ?array
   {
     $response = $this->httpClient->request('GET', $livestreamUrl);
 
@@ -45,6 +48,6 @@ final readonly class ChatUrlFetcher
     $chatUrl = "{$chatBaseUrl}/chat/{$chatId}/stream";
     $this->logger->debug('ChatUrlFetcher: got chat URL', ['chatUrl' => $chatUrl]);
 
-    return $chatUrl;
+    return [$chatUrl, (int) $chatId];
   }
 }

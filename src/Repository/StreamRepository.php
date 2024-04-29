@@ -23,28 +23,29 @@ class StreamRepository extends ServiceEntityRepository
     parent::__construct($registry, Stream::class);
   }
 
-  //    /**
-  //     * @return Stream[] Returns an array of Stream objects
-  //     */
-  //    public function findByExampleField($value): array
-  //    {
-  //        return $this->createQueryBuilder('s')
-  //            ->andWhere('s.exampleField = :val')
-  //            ->setParameter('val', $value)
-  //            ->orderBy('s.id', 'ASC')
-  //            ->setMaxResults(10)
-  //            ->getQuery()
-  //            ->getResult()
-  //        ;
-  //    }
+  public function getOrCreateStream(int $id, \DateTimeImmutable $now): Stream
+  {
+    $stream = $this->find($id);
+    if (null !== $stream) {
+      return $stream;
+    }
 
-  //    public function findOneBySomeField($value): ?Stream
-  //    {
-  //        return $this->createQueryBuilder('s')
-  //            ->andWhere('s.exampleField = :val')
-  //            ->setParameter('val', $value)
-  //            ->getQuery()
-  //            ->getOneOrNullResult()
-  //        ;
-  //    }
+    $qb = $this->createQueryBuilder('st');
+    $lastStream = $qb
+      ->where($qb->select($qb->expr()->max('id')))
+      ->getQuery()
+      ->getSingleResult()
+    ;
+    \assert($lastStream instanceof Stream);
+
+    $stream = (new Stream())
+      ->setId($id)
+      ->setPrev($lastStream)
+      ->setDate($now)
+    ;
+    $this->getEntityManager()->persist($stream);
+    $this->getEntityManager()->flush();
+
+    return $stream;
+  }
 }

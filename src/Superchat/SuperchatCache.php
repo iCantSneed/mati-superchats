@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mati\Superchat;
 
 use Mati\Dto\SuperchatsData;
+use Mati\Entity\Stream;
 use Mati\Entity\Superchat;
 use Mati\MatiConfiguration;
 use Psr\Cache\CacheItemInterface;
@@ -26,37 +27,37 @@ final readonly class SuperchatCache
   public function storeSuperchat(Superchat $superchat): void
   {
     $superchatsCacheItem = $this->cache->getItem($this->cacheKey);
-    $superchatsData = $this->getSuperchatsDataFromCache($superchatsCacheItem);
+    $superchatsData = $this->getSuperchatsDataFromCache($superchatsCacheItem, $superchat->getStream());
     $superchatsData->superchats[] = $superchat;
     $superchatsCacheItem->set($superchatsData);
     $this->cache->save($superchatsCacheItem);
   }
 
-  private function getSuperchatsDataFromCache(CacheItemInterface $superchatsCacheItem): SuperchatsData
+  private function getSuperchatsDataFromCache(CacheItemInterface $superchatsCacheItem, ?Stream $stream): SuperchatsData
   {
+    $prevStreamId = $stream?->getPrev()?->getId();
+    \assert(\is_int($prevStreamId));
+
     $superchatsData = $superchatsCacheItem->get();
     if (!$superchatsData instanceof SuperchatsData) {
       $this->logger->notice('SuperchatCache: cache miss or superchats is not a valid object, clearing cache');
 
-      return new SuperchatsData([]);
+      return self::newSuperchatsData($prevStreamId);
     }
 
-    if (empty($superchatsData->superchats)) {
-      $this->logger->info('SuperchatCache: superchats array is empty');
+    if ($superchatsData->prevStreamId !== $prevStreamId) {
+      $this->logger->notice('SuperchatCache: outdated prevStreamId, clearing cache');
 
-      return $superchatsData;
-    }
-
-    $oldestSuperchat = reset($superchatsData->superchats);
-    $oldestSuperchatCreatedInterval = $oldestSuperchat->getCreated()?->diff(new \DateTimeImmutable(), true);
-    if (null === $oldestSuperchatCreatedInterval || $oldestSuperchatCreatedInterval->days >= 1) {
-      $this->logger->info('SuperchatCache: superchats cache is stale, clearing cache');
-
-      return new SuperchatsData([]);
+      return self::newSuperchatsData($prevStreamId);
     }
 
     $this->logger->debug('SuperchatCache: cache hit', ['superchatsData' => $superchatsData]);
 
     return $superchatsData;
+  }
+
+  private static function newSuperchatsData(int $prevStreamId): SuperchatsData
+  {
+    return new SuperchatsData(superchats: [], prevStreamId: $prevStreamId);
   }
 }
