@@ -9,9 +9,8 @@ We assume that the app will be deployed to `/srv/mati`.
   ```bash
    php /srv/mati/bin/console mati:stream
    ```
-* Create the file `/srv/mati/.deploykey` with the contents `<?php return "${DEPLOYKEY}";`, where DEPLOYKEY matches the secret with the same name.
-* Copy `.env.local.prod.template` to `.env.local` and edit appropriately.
 
-### During Development
+### First Time & During Development
 * If `./html/deploy.php` changes, it will need to be manually uploaded to `/srv/mati/html/deploy.php`.
-* If prod `APP_SECRET` changes, it will need to be updated in repo secrets and directly in `/srv/mati/.env.local.php`.
+* If prod `DEPLOYKEY` changes, it will need to be updated in repo secrets and the file `/srv/mati/.deploykey` needs to be set to `<?php return "${DEPLOYKEY}";`.
+* If `.env.local.prod.template` changes, it will need to be manually uploaded to `/srv/mati/.env.local` and adjusted accordingly.
