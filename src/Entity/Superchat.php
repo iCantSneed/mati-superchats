@@ -27,6 +27,10 @@ class Superchat
   #[ORM\Column]
   private ?\DateTimeImmutable $created = null;
 
+  #[ORM\ManyToOne]
+  #[ORM\JoinColumn(nullable: false)]
+  private ?Stream $stream = null;
+
   public function getId(): ?int
   {
     return $this->id;
@@ -83,6 +87,18 @@ class Superchat
   public function setCreated(\DateTimeImmutable $created): static
   {
     $this->created = $created;
+
+    return $this;
+  }
+
+  public function getStream(): ?Stream
+  {
+    return $this->stream;
+  }
+
+  public function setStream(?Stream $stream): static
+  {
+    $this->stream = $stream;
 
     return $this;
   }
