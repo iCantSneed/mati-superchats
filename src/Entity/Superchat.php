@@ -7,6 +7,7 @@ namespace Mati\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Mati\Repository\SuperchatRepository;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Entity(repositoryClass: SuperchatRepository::class)]
 class Superchat
@@ -29,6 +30,7 @@ class Superchat
 
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: false)]
+  #[Ignore]
   private ?Stream $stream = null;
 
   public function getId(): ?int

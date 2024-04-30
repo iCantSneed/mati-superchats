@@ -30,12 +30,12 @@ class StreamRepository extends ServiceEntityRepository
       return $stream;
     }
 
-    $qb = $this->createQueryBuilder('st');
-    $lastStream = $qb
-      ->where($qb->select($qb->expr()->max('id')))
-      ->getQuery()
-      ->getSingleResult()
+    $lastStreams = $this->getEntityManager()
+      ->createQuery('SELECT st FROM Mati\Entity\Stream st WHERE st.id=(SELECT MAX(st2.id) FROM Mati\Entity\Stream st2)')
+      ->getResult()
     ;
+    \assert(\is_array($lastStreams) && 1 === \count($lastStreams));
+    [$lastStream] = $lastStreams;
     \assert($lastStream instanceof Stream);
 
     $stream = (new Stream())
