@@ -1,11 +1,16 @@
 name: Build and Deploy
 on:
   workflow_dispatch:
+    inputs:
+      containerTag:
+        description: 'Container tag'
+        required: true
+        default: 'master'
 jobs:
   build_deploy:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/icantsneed/mati-superchats:master
+      image: ghcr.io/icantsneed/mati-superchats:${{ inputs.containerTag }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
