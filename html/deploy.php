@@ -20,8 +20,8 @@ return static function (array $context): void {
     exit;
   }
 
-  $runOrDie = static function (BaseApplication $application, ArrayInput $input, BufferedOutput $output): void {
-    $result = $application->run($input, $output);
+  $runOrDie = static function (BaseApplication $application, array $parameters, BufferedOutput $output): void {
+    $result = $application->run(new ArrayInput($parameters), $output);
     if (0 !== $result) {
       http_response_code(500);
       echo $output->fetch();
@@ -30,28 +30,35 @@ return static function (array $context): void {
     }
   };
 
-  $output = new BufferedOutput();
-
-  chdir('..');
-  putenv('COMPOSER_HOME='.dirname(__DIR__).'/var/cache/composer');
-  $input = new ArrayInput(['command' => 'install', '--no-dev' => true, '--optimize-autoloader' => true]);
-  $application = new ComposerApplication();
-  $application->setAutoExit(false);
-  $application->setCatchExceptions(false);
-  $runOrDie($application, $input, $output);
-  chdir('html');
-
   $kernel = new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
   $application = new Application($kernel);
   $application->setAutoExit(false);
+  $output = new BufferedOutput();
 
-  $commands = [
-    ['command' => 'doctrine:migrations:migrate', '-n' => true],
-    ['command' => 'cache:warmup', '-n' => true],
-  ];
-  foreach ($commands as $params) {
-    $input = new ArrayInput($params);
-    $runOrDie($application, $input, $output);
+  switch ($_POST['stage'] ?? '') {
+    case '1':
+      chdir('..');
+      putenv('COMPOSER_HOME='.dirname(__DIR__).'/var/cache/composer');
+      $parameters = ['command' => 'install', '--no-dev' => true, '--optimize-autoloader' => true];
+      $composerApplication = new ComposerApplication();
+      $composerApplication->setAutoExit(false);
+      $composerApplication->setCatchExceptions(false);
+      $runOrDie($composerApplication, $parameters, $output);
+      chdir('html');
+
+      $runOrDie($application, ['command' => 'cache:clear', '-n' => true], $output);
+
+      break;
+
+    case '2':
+      $runOrDie($application, ['command' => 'doctrine:migrations:migrate', '-n' => true], $output);
+
+      break;
+
+    default:
+      http_response_code(404);
+
+      exit;
   }
 
   echo $output->fetch();

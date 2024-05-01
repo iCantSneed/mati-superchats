@@ -27,24 +27,8 @@ return [
       },
     ],
     'after' => [
-      static function (Server $server, Logger $logger, Deployer $deployer): bool {
-        $out = Helpers::fetchUrl('https://mati.x10.mx/deploy.php', $err, ['secret' => $_ENV['DEPLOYKEY']]);
-        if (null !== $out) { // intentionally ==
-          $logger->log($out, 'gray', 0);
-        }
-        if ($err) {
-          $logger->log($err, 'red', 0);
-
-          return false;
-        }
-        if (!str_ends_with(haystack: $out, needle: '(((OK)))')) {
-          $logger->log('Deployment unsuccessful', 'red', 0);
-
-          return false;
-        }
-
-        return true;
-      },
+      deployStage('1'),
+      deployStage('2'),
     ],
   ],
 ];
@@ -70,4 +54,26 @@ function cleanComposerJsonForProd(): void
   $composerJsonFile->fseek(0);
   $composerJsonFile->fwrite($newComposerJsonRaw);
   $composerJsonFile->ftruncate(strlen($newComposerJsonRaw));
+}
+
+function deployStage(string $stage): callable
+{
+  return static function (Server $server, Logger $logger, Deployer $deployer) use ($stage): bool {
+    $out = Helpers::fetchUrl('https://mati.x10.mx/deploy.php', $err, ['secret' => $_ENV['DEPLOYKEY'], 'stage' => $stage]);
+    if (null !== $out) { // intentionally ==
+      $logger->log($out, 'gray', 0);
+    }
+    if ($err) {
+      $logger->log($err, 'red', 0);
+
+      return false;
+    }
+    if (!str_ends_with(haystack: $out, needle: '(((OK)))')) {
+      $logger->log('Deployment unsuccessful', 'red', 0);
+
+      return false;
+    }
+
+    return true;
+  };
 }
