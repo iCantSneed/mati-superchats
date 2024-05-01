@@ -19,7 +19,7 @@ final class Version00001 extends AbstractMigration
 
   public function up(Schema $schema): void
   {
-    $this->addSql('CREATE TABLE stream (id INT NOT NULL, date DATE NOT NULL, prev_id INT DEFAULT NULL, UNIQUE INDEX UNIQ_F0E9BE1CB168B8C0 (prev_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4');
+    $this->addSql('CREATE TABLE stream (id INT NOT NULL, date DATE NOT NULL, prev_id INT DEFAULT NULL, UNIQUE INDEX UNIQ_F0E9BE1CB168B8C0 (prev_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
     // Group superchats by date and insert into the Stream table with a strictly increasing unique ID
     $this->addSql('INSERT INTO stream (date, id) SELECT date(convert_tz(created, \'+00:00\', \'-06:00\')) as date, (unix_timestamp(created) / 1000) as id FROM `superchat` GROUP by date');
     // Populate prev_id based on previous rows' id
