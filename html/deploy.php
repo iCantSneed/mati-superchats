@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Composer\Console\Application as ComposerApplication;
 use Mati\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -19,18 +20,15 @@ return static function (array $context): void {
     exit;
   }
 
+  $output = new BufferedOutput();
+
   chdir('..');
   putenv('COMPOSER_HOME='.dirname(__DIR__).'/var/cache/composer');
   $input = new ArrayInput(['command' => 'install', '--no-dev' => true, '--optimize-autoloader' => true]);
   $application = new ComposerApplication();
   $application->setAutoExit(false);
   $application->setCatchExceptions(false);
-  echo "Running composer install\n";
-  $application->run($input);
-  while (ob_get_level() > 0) {
-    ob_end_flush();
-  }
-  flush();
+  runOrDie($application, $input, $output);
   chdir('html');
 
   $kernel = new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
@@ -43,19 +41,20 @@ return static function (array $context): void {
   ];
   foreach ($commands as $params) {
     $input = new ArrayInput($params);
-    $output = new BufferedOutput();
-    echo "Running {$params['command']}\n";
-    $result = $application->run($input, $output);
-    echo $output->fetch();
-    echo "Process finished with code {$result}\n";
-    while (ob_get_level() > 0) {
-      ob_end_flush();
-    }
-    flush();
-    if (0 !== $result) {
-      throw new Exception();
-    }
+    runOrDie($application, $input, $output);
   }
 
-  echo "Deployment completed\n";
+  echo $output->fetch();
+  echo '(((OK)))';
 };
+
+function runOrDie(BaseApplication $application, ArrayInput $input, BufferedOutput $output): void
+{
+  $result = $application->run($input, $output);
+  if (0 !== $result) {
+    http_response_code(500);
+    echo $output->fetch();
+
+    exit;
+  }
+}

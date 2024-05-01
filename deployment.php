@@ -37,6 +37,11 @@ return [
 
           return false;
         }
+        if (!str_ends_with(haystack: $out, needle: '(((OK)))')) {
+          $logger->log('Deployment unsuccessful', 'red', 0);
+
+          return false;
+        }
 
         return true;
       },
