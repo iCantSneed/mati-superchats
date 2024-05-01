@@ -9,10 +9,9 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 if (!isset($_GLOBALS['mati_deployed'])) {
-  $envs = require dirname(__FILE__, 2).'/.env.local.php';
-  $appSecret = $envs['APP_SECRET'];
+  $deploykey = require dirname(__FILE__, 2).'/.deploykey';
   $matiDeployHeader = $_SERVER['HTTP_X_MATI_DEPLOY'] ?? '';
-  if ($matiDeployHeader !== $appSecret) {
+  if ($matiDeployHeader !== $deploykey) {
     header('404 Not Found');
 
     return;
