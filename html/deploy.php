@@ -8,53 +8,17 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-if (!isset($_GLOBALS['mati_deployed'])) {
-  $deploykey = require dirname(__FILE__, 2).'/.deploykey';
-  $matiDeployHeader = $_SERVER['HTTP_X_MATI_DEPLOY'] ?? '';
-  if ($matiDeployHeader !== $deploykey) {
-    header('404 Not Found');
-
-    return;
-  }
-
-  $archiveFilename = $_FILES['archive']['tmp_name'];
-  $zipFile = new ZipArchive();
-  $result = $zipFile->open($archiveFilename);
-  if (true !== $result) {
-    throw new Exception("Cannot open uploaded ZIP file {$archiveFilename}: error {$result}");
-  }
-
-  header('Content-Type: text/plain');
-  $dest = dirname(__FILE__, 2);
-  for ($i = 0; $i < $zipFile->numFiles; ++$i) {
-    if (0 === $i % 100) {
-      echo "Extracting file {$i}/{$zipFile->numFiles}\n";
-      while (ob_get_level() > 0) {
-        ob_end_flush();
-      }
-      flush();
-    }
-    $filename = $zipFile->getNameIndex($i);
-    $result = $zipFile->extractTo($dest, $filename);
-    if (!$result) {
-      echo "Failed to extract file {$filename}\n";
-
-      throw new Exception();
-    }
-  }
-  $zipFile->close();
-  echo "Extracted all files\n";
-  while (ob_get_level() > 0) {
-    ob_end_flush();
-  }
-  flush();
-
-  $_GLOBALS['mati_deployed'] = true;
-
-  require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
-}
+require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
 
 return static function (array $context): void {
+  $deploykey = require dirname(__FILE__, 2).'/.deploykey';
+  $matiDeployParam = $_POST['secret'] ?? '';
+  if ($matiDeployParam !== $deploykey) {
+    http_response_code(404);
+
+    exit;
+  }
+
   chdir('..');
   putenv('COMPOSER_HOME='.dirname(__DIR__).'/var/cache/composer');
   $input = new ArrayInput(['command' => 'install', '--no-dev' => true, '--optimize-autoloader' => true]);
