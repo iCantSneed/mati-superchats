@@ -20,6 +20,16 @@ return static function (array $context): void {
     exit;
   }
 
+  $runOrDie = static function (BaseApplication $application, ArrayInput $input, BufferedOutput $output): void {
+    $result = $application->run($input, $output);
+    if (0 !== $result) {
+      http_response_code(500);
+      echo $output->fetch();
+
+      exit;
+    }
+  };
+
   $output = new BufferedOutput();
 
   chdir('..');
@@ -28,7 +38,7 @@ return static function (array $context): void {
   $application = new ComposerApplication();
   $application->setAutoExit(false);
   $application->setCatchExceptions(false);
-  runOrDie($application, $input, $output);
+  $runOrDie($application, $input, $output);
   chdir('html');
 
   $kernel = new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
@@ -41,20 +51,9 @@ return static function (array $context): void {
   ];
   foreach ($commands as $params) {
     $input = new ArrayInput($params);
-    runOrDie($application, $input, $output);
+    $runOrDie($application, $input, $output);
   }
 
   echo $output->fetch();
   echo '(((OK)))';
 };
-
-function runOrDie(BaseApplication $application, ArrayInput $input, BufferedOutput $output): void
-{
-  $result = $application->run($input, $output);
-  if (0 !== $result) {
-    http_response_code(500);
-    echo $output->fetch();
-
-    exit;
-  }
-}
