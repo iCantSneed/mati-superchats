@@ -12,4 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Deploy
+        env:
+          FTP_REMOTE: ${{ secrets.FTP_REMOTE }}
+          DEPLOYKEY: ${{ secrets.DEPLOYKEY }}
         run: php /root/.composer/vendor/bin/deployment deployment.php
