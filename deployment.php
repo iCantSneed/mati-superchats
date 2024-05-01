@@ -7,7 +7,6 @@ use Deployment\Logger;
 use Deployment\Server;
 
 return [
-  'log' => './var/log/deployment.log',
   'mati' => [
     'remote' => $_ENV['FTP_REMOTE'],
     'include' => '
