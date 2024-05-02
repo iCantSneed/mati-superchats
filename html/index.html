@@ -4,38 +4,64 @@
     <title>MATI Superchats</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="UTF-8">
-    <style type="text/css">
-      .sticky { position: sticky; top: 0; background-color: white; }
-      .title { border-bottom: 2px; }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uswds/3.8.0/css/uswds.min.css" integrity="sha512-fxBZVlVQrZVKTlt4kr/hPDd1p0SYHuQxytgI9ccrYonBfAFTXbGPSL08YdYUA8DPXpW25F5G+nOjQK76s5USQQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uswds/3.8.0/js/uswds-init.min.js" integrity="sha512-O4/iaC7XNMEYqktWqYtH6Rg++++GZAdUMITJVzu0D1X4ckQyXHJOoC4SC4Ivwsr8YMTjhSnDxem0Ac62IQuG1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   </head>
   <body>
-    <div class="sticky">
-      <h1 class="title">
-        MATI Superchats
-        <span id="conn-ind"></span>
-      </h1>
+    <div class="usa-overlay"></div>
+    <header class="usa-header usa-header--basic">
+      <div class="usa-nav-container">
+        <div class="usa-navbar">
+          <div class="usa-logo">
+            <em class="usa-logo__text">MATI Superchats</em>
+          </div>
+          <button type="button" class="usa-menu-btn">Menu</button>    
+        </div>
+        <nav class="usa-nav">
+          <button type="button" class="usa-nav__close">
+            <svg class="usa-icon square-3">
+              <use href="sprite.svg#close"></use>
+            </svg>
+          </button>
+          <ul class="usa-nav__primary usa-accordion">
+            <li class="usa-nav__primary-item">
+              <a class="usa-nav-link" title="Disconnected" id="conn-ind-link">
+                <svg class="usa-icon square-4 text-red" id="conn-ind-img">
+                  <use href="sprite.svg#electrical_services"></use>
+                </svg>
+                <span class="desktop:display-none" id="conn-ind-title">Disconnected</span>
+              </a>
+            </li>
+            <li class="usa-nav__primary-item">
+              <a href="https://github.com/iCantSneed/mati-superchats/releases" target="_blank" class="usa-nav-link" title="Superchats Archive">
+                <svg class="usa-icon square-4">
+                  <use href="sprite.svg#topic"></use>
+                </svg>
+                <span class="desktop:display-none">Superchats Archive</span>
+              </a>
+            </li>
+            <li class="usa-nav__primary-item">
+              <a href="https://github.com/iCantSneed/mati-superchats" target="_blank" class="usa-nav-link" title="SneedHub">
+                <svg class="usa-icon square-4">
+                  <use href="sprite.svg#github"></use>
+                </svg>
+                <span class="desktop:display-none">SneedHub</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <div class="usa-section">
+      <div class="grid-container">
+        <div class="grid-row">
+          <main class="usa-prose">
+            Hold on while you're being connected...
+          </main>
+        </div>
+      </div>
     </div>
-    <script type="text/javascript">
-      (function () {
-        const connIndElement = document.getElementById('conn-ind');
-        let loadingIndicatorOffset = -1;
-        const loadingTask = setInterval(() => {
-          loadingIndicatorOffset = (loadingIndicatorOffset + 1) % 12;
-          connIndElement.innerText = String.fromCodePoint(0x1f550 + loadingIndicatorOffset);
-        }, 250);
-
-        const eventSource = new EventSource("/api/live");
-        eventSource.onopen = () => {
-          clearInterval(loadingTask);
-          connIndElement.innerText = '🟢';
-        };
-        eventSource.onerror = (e) => {
-          clearInterval(loadingTask);
-          console.error(e);
-          connIndElement.innerText = '🔴';
-        };
-      })();
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uswds/3.8.0/js/uswds.min.js" integrity="sha512-V/eNPuqU6gTDHwQsFL5X12i0TzX5lwVvON6VuEeTXDoSnAeA5nnc53TUEhiUdT16s0nj4MXo6OcUBAvwhdFOAw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="script.js"></script>
   </body>
 </html>
