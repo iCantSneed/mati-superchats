@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mati\Superchat;
 
 use Mati\Dto\RumbleChat\RumbleChatData;
+use Mati\Entity\Stream;
 use Mati\Entity\Superchat;
 
 final readonly class SuperchatConverter
@@ -12,7 +13,7 @@ final readonly class SuperchatConverter
   /**
    * @return iterable<Superchat>
    */
-  public function extractSuperchats(RumbleChatData $rumbleChatData): iterable
+  public function extractSuperchats(RumbleChatData $rumbleChatData, Stream $stream): iterable
   {
     $users = array_column($rumbleChatData->users, 'username', 'id');
 
@@ -25,6 +26,7 @@ final readonly class SuperchatConverter
           ->setPriceCents($message->rantPriceCents)
           ->setMessage($message->text)
           ->setCreated($message->time)
+          ->setStream($stream)
         ;
 
         yield $superchat;

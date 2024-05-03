@@ -7,6 +7,7 @@ namespace Mati\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Mati\Repository\SuperchatRepository;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Entity(repositoryClass: SuperchatRepository::class)]
 class Superchat
@@ -26,6 +27,11 @@ class Superchat
 
   #[ORM\Column]
   private ?\DateTimeImmutable $created = null;
+
+  #[ORM\ManyToOne]
+  #[ORM\JoinColumn(nullable: false)]
+  #[Ignore]
+  private ?Stream $stream = null;
 
   public function getId(): ?int
   {
@@ -83,6 +89,18 @@ class Superchat
   public function setCreated(\DateTimeImmutable $created): static
   {
     $this->created = $created;
+
+    return $this;
+  }
+
+  public function getStream(): ?Stream
+  {
+    return $this->stream;
+  }
+
+  public function setStream(?Stream $stream): static
+  {
+    $this->stream = $stream;
 
     return $this;
   }
