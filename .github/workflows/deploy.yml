@@ -14,18 +14,10 @@ jobs:
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-      env:
-        APP_ENV: prod
-        APP_DEBUG: 0
-        DATABASE_URL: bogus
     steps:
       - uses: actions/checkout@v4
-      - name: Install dependencies
-        run: composer install --no-dev --optimize-autoloader
-      - name: Run pre-deploy command
-        run: php bin/predeploy
-      - name: Zip up required files
-        run: zip -r -9 mati.zip bin/ config/ html/ migrations/ src/ .env composer.json -x html/deploy.php
-      - name: Deploy archive
-        run: |
-          curl -v -k --fail-with-body --stderr - -H "X-Mati-Deploy: ${{ secrets.DEPLOYKEY }}" -F "archive=@mati.zip" https://mati.x10.mx/deploy.php
+      - name: Deploy
+        env:
+          FTP_REMOTE: ${{ secrets.FTP_REMOTE }}
+          DEPLOYKEY: ${{ secrets.DEPLOYKEY }}
+        run: php /root/.composer/vendor/bin/deployment deployment.php

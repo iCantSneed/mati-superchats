@@ -5,93 +5,62 @@ declare(strict_types=1);
 use Composer\Console\Application as ComposerApplication;
 use Mati\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-if (!isset($_GLOBALS['mati_deployed'])) {
-  $deploykey = require dirname(__FILE__, 2).'/.deploykey';
-  $matiDeployHeader = $_SERVER['HTTP_X_MATI_DEPLOY'] ?? '';
-  if ($matiDeployHeader !== $deploykey) {
-    header('404 Not Found');
-
-    return;
-  }
-
-  $archiveFilename = $_FILES['archive']['tmp_name'];
-  $zipFile = new ZipArchive();
-  $result = $zipFile->open($archiveFilename);
-  if (true !== $result) {
-    throw new Exception("Cannot open uploaded ZIP file {$archiveFilename}: error {$result}");
-  }
-
-  header('Content-Type: text/plain');
-  $dest = dirname(__FILE__, 2);
-  for ($i = 0; $i < $zipFile->numFiles; ++$i) {
-    if (0 === $i % 100) {
-      echo "Extracting file {$i}/{$zipFile->numFiles}\n";
-      while (ob_get_level() > 0) {
-        ob_end_flush();
-      }
-      flush();
-    }
-    $filename = $zipFile->getNameIndex($i);
-    $result = $zipFile->extractTo($dest, $filename);
-    if (!$result) {
-      echo "Failed to extract file {$filename}\n";
-
-      throw new Exception();
-    }
-  }
-  $zipFile->close();
-  echo "Extracted all files\n";
-  while (ob_get_level() > 0) {
-    ob_end_flush();
-  }
-  flush();
-
-  $_GLOBALS['mati_deployed'] = true;
-
-  require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
-}
+require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
 
 return static function (array $context): void {
-  chdir('..');
-  putenv('COMPOSER_HOME='.dirname(__DIR__).'/var/cache/composer');
-  $input = new ArrayInput(['command' => 'install', '--no-dev' => true, '--optimize-autoloader' => true]);
-  $application = new ComposerApplication();
-  $application->setAutoExit(false);
-  $application->setCatchExceptions(false);
-  echo "Running composer install\n";
-  $application->run($input);
-  while (ob_get_level() > 0) {
-    ob_end_flush();
+  $deploykey = require dirname(__FILE__, 2).'/.deploykey';
+  $matiDeployParam = $_POST['secret'] ?? '';
+  if ($matiDeployParam !== $deploykey) {
+    http_response_code(404);
+
+    exit;
   }
-  flush();
-  chdir('html');
+
+  $runOrDie = static function (BaseApplication $application, array $parameters, BufferedOutput $output): void {
+    $result = $application->run(new ArrayInput($parameters), $output);
+    if (0 !== $result) {
+      http_response_code(500);
+      echo $output->fetch();
+
+      exit;
+    }
+  };
 
   $kernel = new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
   $application = new Application($kernel);
   $application->setAutoExit(false);
+  $output = new BufferedOutput();
 
-  $commands = [
-    ['command' => 'doctrine:migrations:migrate', '-n' => true],
-    ['command' => 'cache:warmup', '-n' => true],
-  ];
-  foreach ($commands as $params) {
-    $input = new ArrayInput($params);
-    $output = new BufferedOutput();
-    echo "Running {$params['command']}\n";
-    $result = $application->run($input, $output);
-    echo $output->fetch();
-    echo "Process finished with code {$result}\n";
-    while (ob_get_level() > 0) {
-      ob_end_flush();
-    }
-    flush();
-    if (0 !== $result) {
-      throw new Exception();
-    }
+  switch ($_POST['stage'] ?? '') {
+    case '1':
+      chdir('..');
+      putenv('COMPOSER_HOME='.dirname(__DIR__).'/var/cache/composer');
+      $parameters = ['command' => 'install', '--no-dev' => true, '--optimize-autoloader' => true];
+      $composerApplication = new ComposerApplication();
+      $composerApplication->setAutoExit(false);
+      $composerApplication->setCatchExceptions(false);
+      $runOrDie($composerApplication, $parameters, $output);
+      chdir('html');
+
+      $runOrDie($application, ['command' => 'cache:clear', '-n' => true], $output);
+
+      break;
+
+    case '2':
+      $runOrDie($application, ['command' => 'doctrine:migrations:migrate', '-n' => true], $output);
+
+      break;
+
+    default:
+      http_response_code(404);
+
+      exit;
   }
 
-  echo "Deployment completed\n";
+  echo $output->fetch();
+  echo '(((OK)))';
 };
