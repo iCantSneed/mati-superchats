@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Mati\Controller;
 
-use DateTimeImmutable;
 use Mati\Dto\RumbleChat\Message;
 use Mati\Dto\RumbleChat\RumbleChatData;
 use Mati\Dto\RumbleChat\User;
@@ -20,7 +19,7 @@ final class DevController extends AbstractController
   public function devRssFeed(): Response
   {
     $prefix = (string) random_int(PHP_INT_MIN, PHP_INT_MAX);
-    $devRumbleVideoLink = "http://localhost/api/dev/rumble-video?$prefix";
+    $devRumbleVideoLink = "http://localhost/api/dev/rumble-video?{$prefix}";
     $rss = <<<EOF
     <?xml version="1.0" ?>
     <rss version="2.0">
@@ -31,11 +30,12 @@ final class DevController extends AbstractController
       <item>
         <title>Dev</title>
         <description>Dev</description>
-        <link>$devRumbleVideoLink</link>
+        <link>{$devRumbleVideoLink}</link>
       </item>
       </channel>
     </rss>
     EOF;
+
     return new Response($rss);
   }
 
@@ -43,7 +43,8 @@ final class DevController extends AbstractController
   public function devRumbleVideo(): Response
   {
     $chatId = $_ENV['DEV_CHAT_ID'] ?? (string) random_int(0, PHP_INT_MAX);
-    $str = "RumbleChat(\"http://localhost/api/dev\", $chatId,";
+    $str = "RumbleChat(\"http://localhost/api/dev\", {$chatId},";
+
     return new Response($str);
   }
 
@@ -52,28 +53,28 @@ final class DevController extends AbstractController
   {
     $response = new StreamedResponse();
     $response->headers->set('Content-Type', 'text/event-stream');
-    $response->setCallback(static function () use ($serializer) {
-      while (connection_aborted() === 0) {
-        $now = new DateTimeImmutable();
+    $response->setCallback(static function () use ($serializer): void {
+      while (0 === connection_aborted()) {
+        $now = new \DateTimeImmutable();
         $id = (string) $now->getTimestamp();
 
         $message = new Message();
         $message->id = $id;
         $message->time = $now;
         $message->userId = $id;
-        $message->text = "Message $id";
+        $message->text = "Message {$id}";
         $message->rantPriceCents = 100;
 
         $user = new User();
         $user->id = $id;
-        $user->username = "User $id";
+        $user->username = "User {$id}";
 
         $chatData = new RumbleChatData();
         $chatData->messages = [$message];
         $chatData->users = [$user];
 
         $json = $serializer->serialize($chatData, 'json');
-        echo "data: $json\n\n";
+        echo "data: {$json}\n\n";
         flush();
 
         sleep(10);
