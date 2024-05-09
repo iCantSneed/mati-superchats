@@ -44,7 +44,6 @@ class StreamRepository extends ServiceEntityRepository
       ->setDate($now)
     ;
     $this->getEntityManager()->persist($stream);
-    $this->getEntityManager()->flush();
 
     return $stream;
   }

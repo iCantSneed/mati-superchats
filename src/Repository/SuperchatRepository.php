@@ -22,4 +22,16 @@ class SuperchatRepository extends ServiceEntityRepository
   {
     parent::__construct($registry, Superchat::class);
   }
+
+  public function persistIfNew(Superchat $superchat): bool
+  {
+    $existingSuperchat = $this->find($superchat->getId());
+    if (null !== $existingSuperchat) {
+      return false;
+    }
+
+    $this->getEntityManager()->persist($superchat);
+
+    return true;
+  }
 }
