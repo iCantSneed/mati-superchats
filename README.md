@@ -1,4 +1,23 @@
 # MATI Superchats Streamer & Archiver
+This web application is used to monitor, display, and archive superchats from the MATI streams in real time.
+* Superchats can be viewed in real time on https://mati.x10.mx.
+* Superchat archives can be downloaded from the [Releases page](https://github.com/iCantSneed/mati-superchats/releases).
+
+## Development
+* Use the docker container and docker-compose files provided in this repository along with Visual Studio Code's devcontainers.
+* Set up the database by running
+  ```bash
+  php bin/console doctrine:migrations:migrate
+  ```
+* Monitor for and record new superchats during a livestream by running
+  ```bash
+  php bin/console mati:stream
+  ```
+* To launch the web UI, first start apache by running
+  ```bash
+  apache2ctl start
+  ```
+  and navigating to the URL that Visual Studio Code provided, most likely http://localhost:8080.
 
 ## Deployment
 We assume that the app will be deployed to `/srv/mati`.
@@ -11,6 +30,5 @@ We assume that the app will be deployed to `/srv/mati`.
    ```
 
 ### First Time & During Development
-* If `./html/deploy.php` changes, it will need to be manually uploaded to `/srv/mati/html/deploy.php`.
 * If prod `DEPLOYKEY` changes, it will need to be updated in repo secrets and the file `/srv/mati/.deploykey` needs to be set to `<?php return "${DEPLOYKEY}";`.
 * If `.env.local.prod.template` changes, it will need to be manually uploaded to `/srv/mati/.env.local` and adjusted accordingly.
