@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Mati\Command;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Mati\Ipc\IpcServer;
 use Mati\Repository\StreamRepository;
+use Mati\Repository\SuperchatRepository;
 use Mati\Rumble\ChatClient;
 use Mati\Rumble\ChatUrlFetcher;
 use Mati\Rumble\RssLivestreamUrlFetcher;
 use Mati\Superchat\SuperchatCache;
 use Mati\Superchat\SuperchatConverter;
-use Mati\Superchat\SuperchatResettableRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -32,9 +33,10 @@ final class MatiStreamCommand extends Command
     private readonly ChatClient $chatClient,
     private readonly SuperchatConverter $superchatConverter,
     private readonly SerializerInterface $serializer,
-    private readonly SuperchatResettableRepository $repository,
     private readonly SuperchatCache $superchatCache,
     private readonly StreamRepository $streamRepository,
+    private readonly SuperchatRepository $superchatRepository,
+    private readonly EntityManagerInterface $entityManager,
     private readonly LoggerInterface $logger,
   ) {
     parent::__construct();
@@ -68,13 +70,17 @@ final class MatiStreamCommand extends Command
         $superchatJson = $this->serializer->serialize($superchat, 'json');
         $this->logger->info('Received superchat', ['superchat' => $superchatJson]);
 
-        if (!$this->repository->save($superchat)) {
+        if (!$this->superchatRepository->persistIfNew($superchat)) {
+          $this->logger->warning('Superchat already exists', ['superchat' => $superchat]);
+
           continue;
         }
 
         $this->ipcServer->send($superchatJson);
         $this->superchatCache->storeSuperchat($superchat);
       }
+
+      $this->entityManager->flush();
     }
 
     return Command::SUCCESS;

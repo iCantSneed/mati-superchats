@@ -10,16 +10,17 @@ use Mati\Dto\RumbleChat\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
 final class DevController extends AbstractController
 {
   #[Route('/api/dev/rss')]
-  public function devRssFeed(): Response
+  public function devRssFeed(#[MapQueryParameter] ?string $start = null): Response
   {
-    $prefix = (string) random_int(PHP_INT_MIN, PHP_INT_MAX);
-    $devRumbleVideoLink = "http://localhost/api/dev/rumble-video?{$prefix}";
+    $start = $start ?? (string) random_int(0, (int) 0xffff_ffff_ffff_ffff_ffff_ff);
+    $devRumbleVideoLink = "http://localhost/api/dev/rumble-video?start={$start}";
     $rss = <<<EOF
     <?xml version="1.0" ?>
     <rss version="2.0">
@@ -40,47 +41,52 @@ final class DevController extends AbstractController
   }
 
   #[Route('/api/dev/rumble-video')]
-  public function devRumbleVideo(): Response
+  public function devRumbleVideo(#[MapQueryParameter] string $start): Response
   {
-    $chatId = $_ENV['DEV_CHAT_ID'] ?? (string) random_int(0, PHP_INT_MAX);
-    $str = "RumbleChat(\"http://localhost/api/dev\", {$chatId},";
+    $str = "RumbleChat(\"http://localhost/api/dev\", {$start},";
 
     return new Response($str);
   }
 
-  #[Route('/api/dev/chat/{chatId}/stream')]
-  public function devLivestreamChat(SerializerInterface $serializer): Response
+  #[Route('/api/dev/chat/{start}/stream')]
+  public function devLivestreamChat(string $start, SerializerInterface $serializer): Response
   {
     $response = new StreamedResponse();
     $response->headers->set('Content-Type', 'text/event-stream');
-    $response->setCallback(static function () use ($serializer): void {
+    $response->setCallback(static function () use ($serializer, $start): void {
+      self::sendSuperchat($serializer, $start);
+
       while (0 === connection_aborted()) {
-        $now = new \DateTimeImmutable();
-        $id = (string) $now->getTimestamp();
-
-        $message = new Message();
-        $message->id = $id;
-        $message->time = $now;
-        $message->userId = $id;
-        $message->text = "Message {$id}";
-        $message->rantPriceCents = 100;
-
-        $user = new User();
-        $user->id = $id;
-        $user->username = "User {$id}";
-
-        $chatData = new RumbleChatData();
-        $chatData->messages = [$message];
-        $chatData->users = [$user];
-
-        $json = $serializer->serialize($chatData, 'json');
-        echo "data: {$json}\n\n";
-        flush();
-
+        self::sendSuperchat($serializer);
         sleep(10);
       }
     });
 
     return $response;
+  }
+
+  private static function sendSuperchat(SerializerInterface $serializer, ?string $id = null): void
+  {
+    $now = new \DateTimeImmutable();
+    $id = $id ?? (string) $now->getTimestamp();
+
+    $message = new Message();
+    $message->id = $id;
+    $message->time = $now;
+    $message->userId = $id;
+    $message->text = "Message {$id}";
+    $message->rantPriceCents = 100;
+
+    $user = new User();
+    $user->id = $id;
+    $user->username = "User {$id}";
+
+    $chatData = new RumbleChatData();
+    $chatData->messages = [$message];
+    $chatData->users = [$user];
+
+    $json = $serializer->serialize($chatData, 'json');
+    echo "data: {$json}\n\n";
+    flush();
   }
 }
