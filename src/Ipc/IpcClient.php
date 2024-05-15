@@ -14,7 +14,7 @@ final class IpcClient
 
   public function __construct(
     private readonly LoggerInterface $logger,
-    #[Autowire(MatiConfiguration::PARAM_IPC_PORT)]
+    #[Autowire(env: MatiConfiguration::ENV_IPC_PORT)]
     private readonly int $ipcPort,
   ) {
     // Do nothing.

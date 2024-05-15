@@ -19,7 +19,7 @@ final readonly class RssLivestreamUrlFetcher
     private LivestreamUrlCache $livestreamUrlCache,
     CacheItemPoolInterface $cache,
     private LoggerInterface $logger,
-    #[Autowire(MatiConfiguration::PARAM_LIVESTREAM_RSS_URL)]
+    #[Autowire(env: MatiConfiguration::ENV_LIVESTREAM_RSS_URL)]
     string $livestreamRssUrl,
   ) {
     $this->simplepie = new SimplePie();

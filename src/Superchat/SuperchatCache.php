@@ -20,7 +20,7 @@ final readonly class SuperchatCache
     private CacheItemPoolInterface $cache,
     private SuperchatRepository $superchatRepository,
     private LoggerInterface $logger,
-    #[Autowire(MatiConfiguration::PARAM_SUPERCHATS_CACHE_KEY)]
+    #[Autowire(env: MatiConfiguration::ENV_SUPERCHATS_CACHE_KEY)]
     private string $cacheKey,
   ) {
     // Do nothing.

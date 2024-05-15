@@ -12,7 +12,7 @@ final readonly class LivestreamUrlCache
 {
   public function __construct(
     private CacheItemPoolInterface $cache,
-    #[Autowire(MatiConfiguration::PARAM_LIVESTREAM_URL_CACHE_KEY)]
+    #[Autowire(env: MatiConfiguration::ENV_LIVESTREAM_URL_CACHE_KEY)]
     private string $livestreamUrlCacheKey,
   ) {
     // Do nothing.
