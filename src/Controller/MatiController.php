@@ -10,7 +10,6 @@ use Mati\Superchat\SuperchatStreamer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -28,28 +27,23 @@ final class MatiController extends AbstractController
   }
 
   #[Route(
-    '/api/archive',
+    '/api/archive/{dateString}',
     condition: "request.headers.get('X-Mati-Archive') == env('".MatiConfiguration::ENV_ARCHIVE_SECRET."')"
   )
   ]
   public function archive(
     SuperchatRepository $superchatRepository,
     SerializerInterface $serializer,
-    #[MapQueryParameter('date')]
-    ?string $dateString = null,
+    string $dateString,
   ): Response {
-    if (null === $dateString) {
-      $date = new \DateTimeImmutable('yesterday');
-    } else {
-      $date = \DateTimeImmutable::createFromFormat('Y-m-d|', $dateString);
-      if (false === $date) {
-        throw new NotFoundHttpException();
-      }
+    $date = \DateTimeImmutable::createFromFormat('Y-m-d|', $dateString);
+    if (false === $date) {
+      throw new NotFoundHttpException();
     }
 
     $superchats = $superchatRepository->findByDate($date);
     if (empty($superchats)) {
-      return new Response('', Response::HTTP_NO_CONTENT);
+      return new Response();
     }
 
     $csv = $serializer->serialize($superchats, 'csv');

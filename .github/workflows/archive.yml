@@ -1,0 +1,57 @@
+name: Archive Superchats
+on:
+  schedule:
+    - cron: '27 9 * * *'
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Stream date'
+        required: false
+        type: string
+jobs:
+  retrieve:
+    runs-on: ubuntu-latest
+    outputs:
+      archive_date: ${{ steps.archive_date.outputs.archive_date }}
+      archive_file: ${{ steps.retrieve_superchats.outputs.archive_file }}
+    steps:
+      - id: archive_date
+        name: Store archive date
+        run: |
+          if [ -z ${{ inputs.date }} ]; then
+            echo "archive_date=$(date -d 'yesterday' '+%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+          else
+            echo "archive_date=${{ inputs.date }}" >> "$GITHUB_OUTPUT"
+          fi
+      - id: retrieve_superchats
+        name: Retrieve superchats
+        run: |
+          curl -v -f -o superchats.csv -H 'X-Mati-Archive: ${{ secrets.ARCHIVE_SECRET }}' https://mati.x10.mx/api/archive/${{ steps.archive_date.outputs.archive_date }}"
+          if [[ -s superchats.csv ]]; then
+            {
+              echo 'archive_file<<EOF'
+              cat superchats.csv
+              echo EOF
+            } >> "$GITHUB_OUTPUT"
+          fi
+  archive:
+    needs: retrieve
+    if: ${{ needs.retrieve.outputs.archive_file }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Compress and password-protect superchats
+        run: |
+          echo ${{ needs.retrieve.outputs.archive_file }} > superchats.csv
+          echo zip -9 -P mati ${{ needs.retrieve.outputs.archive_date }}.zip superchats.csv
+      - name: Publish archives
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ needs.retrieve.outputs.archive_date }}.zip
+          name: ${{ needs.retrieve.outputs.archive_date }}
+          tag: ${{ needs.retrieve.outputs.archive_date }}
+          body: |
+            Superchats archive from the ${{ needs.retrieve.outputs.archive_date }} stream.
+
+            Use password `mati` to unarchive.
