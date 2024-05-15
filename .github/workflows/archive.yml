@@ -48,8 +48,9 @@ jobs:
         env:
           ARCHIVE_FILE: ${{ needs.retrieve.outputs.archive_file }}
         run: |
+          echo "::add-mask::$ARCHIVE_FILE"
           echo "$ARCHIVE_FILE" > superchats.csv
-          echo zip -9 -P mati ${{ needs.retrieve.outputs.archive_date }}.zip superchats.csv
+          echo zip -v -9 -P mati ${{ needs.retrieve.outputs.archive_date }}.zip superchats.csv
       - name: Publish archives
         uses: softprops/action-gh-release@v2
         with:
