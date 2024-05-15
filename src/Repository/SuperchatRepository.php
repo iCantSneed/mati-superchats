@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mati\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr;
 use Doctrine\Persistence\ManagerRegistry;
 use Mati\Entity\Superchat;
 
@@ -33,5 +34,20 @@ class SuperchatRepository extends ServiceEntityRepository
     $this->getEntityManager()->persist($superchat);
 
     return true;
+  }
+
+  /**
+   * @return Superchat[]
+   */
+  public function findByDate(\DateTimeImmutable $date): array
+  {
+    $qb = $this->createQueryBuilder('su');
+
+    return $qb
+      ->innerJoin('su.stream', 'st', Expr\Join::WITH, $qb->expr()->eq('st.date', '?1'))
+      ->setParameter(1, $date)
+      ->getQuery()
+      ->getResult()
+    ;
   }
 }
