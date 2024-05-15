@@ -17,6 +17,7 @@ return [
       /src
       .env
       composer.json
+      composer.lock
     ',
     'allowDelete' => true,
     'before' => [
@@ -46,6 +47,7 @@ function cleanComposerJsonForProd(): void
     'require' => $composerJson['require'],
     'autoload' => $composerJson['autoload'],
     'config' => $composerJson['config'],
+    'replace' => $composerJson['replace'],
   ];
   foreach ($newComposerJson['config']['allow-plugins'] as &$value) {
     $value = false;
