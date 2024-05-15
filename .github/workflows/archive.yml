@@ -55,7 +55,7 @@ jobs:
         with:
           files: ${{ needs.retrieve.outputs.archive_date }}.zip
           name: ${{ needs.retrieve.outputs.archive_date }}
-          tag: ${{ needs.retrieve.outputs.archive_date }}
+          tag_name: ${{ needs.retrieve.outputs.archive_date }}
           body: |
             Superchats archive from the ${{ needs.retrieve.outputs.archive_date }} stream.
 
