@@ -8,6 +8,9 @@ on:
         description: 'Stream date'
         required: false
         type: string
+  push:
+    branches:
+      - feature/superchat-archive
 jobs:
   retrieve:
     runs-on: ubuntu-latest
