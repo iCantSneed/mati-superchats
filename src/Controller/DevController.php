@@ -14,12 +14,13 @@ use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
+#[Route(condition: "env('APP_ENV') == 'dev'")]
 final class DevController extends AbstractController
 {
   #[Route('/api/dev/rss')]
   public function devRssFeed(#[MapQueryParameter] ?string $start = null): Response
   {
-    $start = $start ?? (string) random_int(0, (int) 0xffff_ffff_ffff_ffff_ffff_ff);
+    $start = $start ?? (string) random_int(0, PHP_INT_MAX);
     $devRumbleVideoLink = "http://localhost/api/dev/rumble-video?start={$start}";
     $rss = <<<EOF
     <?xml version="1.0" ?>

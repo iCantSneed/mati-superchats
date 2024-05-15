@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mati\Controller;
 
+use Mati\MatiConfiguration;
 use Mati\Repository\SuperchatRepository;
 use Mati\Superchat\SuperchatStreamer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,7 +27,11 @@ final class MatiController extends AbstractController
     return $response;
   }
 
-  #[Route('/api/archive')]
+  #[Route(
+    '/api/archive',
+    condition: "request.headers.get('X-Mati-Archive') == env('".MatiConfiguration::ENV_ARCHIVE_SECRET."')"
+  )
+  ]
   public function archive(
     SuperchatRepository $superchatRepository,
     SerializerInterface $serializer,
