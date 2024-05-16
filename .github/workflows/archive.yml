@@ -8,9 +8,6 @@ on:
         description: 'Stream date'
         required: false
         type: string
-  push:
-    branches:
-      - feature/superchat-archive
 jobs:
   archive:
     runs-on: ubuntu-latest
@@ -21,9 +18,7 @@ jobs:
         name: Store archive date
         run: |
           if [ -z ${{ inputs.date }} ]; then
-            # TODO UNDO THIS CHANGE!
-            # echo "archive_date=$(date -d 'yesterday' '+%Y-%m-%d')" >> "$GITHUB_OUTPUT"
-            echo "archive_date=2024-05-14" >> $GITHUB_OUTPUT
+            echo "archive_date=$(date -d 'yesterday' '+%Y-%m-%d')" >> "$GITHUB_OUTPUT"
           else
             echo "archive_date=${{ inputs.date }}" >> "$GITHUB_OUTPUT"
           fi
