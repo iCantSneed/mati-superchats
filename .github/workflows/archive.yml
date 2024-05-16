@@ -12,11 +12,10 @@ on:
     branches:
       - feature/superchat-archive
 jobs:
-  retrieve:
+  archive:
     runs-on: ubuntu-latest
-    outputs:
-      archive_date: ${{ steps.archive_date.outputs.archive_date }}
-      archive_file: ${{ steps.retrieve_superchats.outputs.archive_file }}
+    permissions:
+      contents: write
     steps:
       - id: archive_date
         name: Store archive date
@@ -33,31 +32,17 @@ jobs:
         run: |
           curl -v -f -o superchats.csv -H 'X-Mati-Archive: ${{ secrets.ARCHIVE_SECRET }}' https://mati.x10.mx/api/archive/${{ steps.archive_date.outputs.archive_date }}
           if [[ -s superchats.csv ]]; then
-            {
-              echo 'archive_file<<EOF'
-              cat superchats.csv
-              echo EOF
-            } >> "$GITHUB_OUTPUT"
+            zip -v -9 -P mati ${{ steps.archive_date.outputs.archive_date }}.zip superchats.csv
+            echo "have_archive=true" >> "$GITHUB_OUTPUT"
           fi
-  archive:
-    needs: retrieve
-    if: ${{ needs.retrieve.outputs.archive_file }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Compress and password-protect superchats
-        run: |
-          echo "${{ needs.retrieve.outputs.archive_file }}" | sed 's/^ */::add-mask::/'
-          echo "$ARCHIVE_FILE" > superchats.csv
-          zip -v -9 -P mati ${{ needs.retrieve.outputs.archive_date }}.zip superchats.csv
-      - name: Publish archives
+      - name: Publish archive
+        if: ${{ steps.retrieve_superchats.outputs.have_archive }}
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ needs.retrieve.outputs.archive_date }}.zip
-          name: ${{ needs.retrieve.outputs.archive_date }}
-          tag_name: ${{ needs.retrieve.outputs.archive_date }}
+          files: ${{ steps.archive_date.outputs.archive_date }}.zip
+          name: ${{ steps.archive_date.outputs.archive_date }}
+          tag_name: ${{ steps.archive_date.outputs.archive_date }}
           body: |
-            Superchats archive from the ${{ needs.retrieve.outputs.archive_date }} stream.
+            Superchats archive from the ${{ steps.archive_date.outputs.archive_date }} stream.
 
             Use password `mati` to unarchive.
