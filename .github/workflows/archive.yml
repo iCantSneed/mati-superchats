@@ -45,12 +45,10 @@ jobs:
       contents: write
     steps:
       - name: Compress and password-protect superchats
-        env:
-          ARCHIVE_FILE: ${{ needs.retrieve.outputs.archive_file }}
         run: |
-          echo "::add-mask::$ARCHIVE_FILE"
+          echo "${{ needs.retrieve.outputs.archive_file }}" | sed 's/^ */::add-mask::/'
           echo "$ARCHIVE_FILE" > superchats.csv
-          echo zip -v -9 -P mati ${{ needs.retrieve.outputs.archive_date }}.zip superchats.csv
+          zip -v -9 -P mati ${{ needs.retrieve.outputs.archive_date }}.zip superchats.csv
       - name: Publish archives
         uses: softprops/action-gh-release@v2
         with:
