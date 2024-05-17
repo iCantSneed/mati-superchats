@@ -7,6 +7,7 @@ namespace Mati\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Mati\Entity\Stream;
+use Mati\Repository\Mixin\LatestStreamMixin;
 
 /**
  * @extends ServiceEntityRepository<Stream>
@@ -18,6 +19,8 @@ use Mati\Entity\Stream;
  */
 class StreamRepository extends ServiceEntityRepository
 {
+  use LatestStreamMixin;
+
   public function __construct(ManagerRegistry $registry)
   {
     parent::__construct($registry, Stream::class);
@@ -30,8 +33,9 @@ class StreamRepository extends ServiceEntityRepository
       return $stream;
     }
 
-    $lastStreams = $this->getEntityManager()
-      ->createQuery('SELECT st FROM Mati\Entity\Stream st WHERE st.id=(SELECT MAX(st2.id) FROM Mati\Entity\Stream st2)')
+    $lastStreams = $this->createQueryBuilder('st')
+      ->where($this->latestStreamWherePredicate('st'))
+      ->getQuery()
       ->getResult()
     ;
     \assert(\is_array($lastStreams) && 1 === \count($lastStreams));
