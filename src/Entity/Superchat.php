@@ -83,7 +83,9 @@ class Superchat
 
   public function getCreated(): ?\DateTimeImmutable
   {
-    return $this->created;
+    return $this->created
+      ? new \DateTimeImmutable($this->created->format('Y-m-d H:i:s'), new \DateTimeZone('UTC'))
+      : null;
   }
 
   public function setCreated(\DateTimeImmutable $created): static
