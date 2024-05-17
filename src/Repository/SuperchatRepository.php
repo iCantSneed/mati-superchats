@@ -50,4 +50,16 @@ class SuperchatRepository extends ServiceEntityRepository
       ->getResult()
     ;
   }
+
+  public function findByDate(\DateTimeImmutable $date): array
+  {
+    $qb = $this->createQueryBuilder('su');
+
+    return $qb
+      ->innerJoin('su.stream', 'st', Expr\Join::WITH, $qb->expr()->eq('st.date', '?1'))
+      ->setParameter(1, $date)
+      ->getQuery()
+      ->getResult()
+    ;
+  }
 }

@@ -1,0 +1,43 @@
+name: Archive Superchats
+on:
+  schedule:
+    - cron: '27 9 * * *'
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Stream date'
+        required: false
+        type: string
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - id: archive_date
+        name: Store archive date
+        run: |
+          if [ -z ${{ inputs.date }} ]; then
+            echo "archive_date=$(date -d 'yesterday' '+%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+          else
+            echo "archive_date=${{ inputs.date }}" >> "$GITHUB_OUTPUT"
+          fi
+      - id: retrieve_superchats
+        name: Retrieve superchats
+        run: |
+          curl -v -f -o superchats.csv -H 'X-Mati-Archive: ${{ secrets.ARCHIVE_SECRET }}' https://mati.x10.mx/api/archive/${{ steps.archive_date.outputs.archive_date }}
+          if [[ -s superchats.csv ]]; then
+            zip -v -9 -P mati ${{ steps.archive_date.outputs.archive_date }}.zip superchats.csv
+            echo "have_archive=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Publish archive
+        if: ${{ steps.retrieve_superchats.outputs.have_archive }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.archive_date.outputs.archive_date }}.zip
+          name: ${{ steps.archive_date.outputs.archive_date }}
+          tag_name: ${{ steps.archive_date.outputs.archive_date }}
+          body: |
+            Superchats archive from the ${{ steps.archive_date.outputs.archive_date }} stream.
+
+            Use password `mati` to unarchive.
