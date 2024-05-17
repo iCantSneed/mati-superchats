@@ -46,7 +46,6 @@ final class MatiController extends AbstractController
       return new Response();
     }
 
-    // FIXME wrong timezone is used!
     $csv = $serializer->serialize($superchats, 'csv');
 
     return new Response($csv, headers: ['Content-Type' => 'text/csv']);
