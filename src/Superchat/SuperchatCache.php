@@ -26,6 +26,29 @@ final readonly class SuperchatCache
     // Do nothing.
   }
 
+  public function getLatestSuperchats(): SuperchatsData
+  {
+    $superchatsCacheItem = $this->cache->getItem($this->cacheKey);
+    $superchatsData = $superchatsCacheItem->get();
+    if ($superchatsData instanceof SuperchatsData) {
+      $this->logger->debug('SuperchatCache: cache hit', ['superchatsData' => $superchatsData]);
+
+      return $superchatsData;
+    }
+
+    $this->logger->notice('SuperchatCache: cache miss or superchats is not a valid object, refreshing cache');
+    $superchats = $this->superchatRepository->findLatest();
+    \assert(isset($superchats[0]));
+    $prevStreamId = $superchats[0]->getStream()?->getPrev()?->getId();
+    \assert(null !== $prevStreamId);
+
+    $superchatsData = new SuperchatsData(superchats: $superchats, prevStreamId: $prevStreamId);
+    $superchatsCacheItem->set($superchatsData);
+    $this->cache->save($superchatsCacheItem);
+
+    return $superchatsData;
+  }
+
   public function storeSuperchat(Superchat $superchat): void
   {
     $stream = $superchat->getStream();

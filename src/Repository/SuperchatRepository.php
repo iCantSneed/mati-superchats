@@ -8,6 +8,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\Persistence\ManagerRegistry;
 use Mati\Entity\Superchat;
+use Mati\Repository\Mixin\LatestStreamMixin;
 
 /**
  * @extends ServiceEntityRepository<Superchat>
@@ -19,6 +20,8 @@ use Mati\Entity\Superchat;
  */
 class SuperchatRepository extends ServiceEntityRepository
 {
+  use LatestStreamMixin;
+
   public function __construct(ManagerRegistry $registry)
   {
     parent::__construct($registry, Superchat::class);
@@ -39,6 +42,15 @@ class SuperchatRepository extends ServiceEntityRepository
   /**
    * @return Superchat[]
    */
+  public function findLatest(): array
+  {
+    return $this->createQueryBuilder('su')
+      ->innerJoin('su.stream', 'st', Expr\Join::WITH, $this->latestStreamWherePredicate('st'))
+      ->getQuery()
+      ->getResult()
+    ;
+  }
+
   public function findByDate(\DateTimeImmutable $date): array
   {
     $qb = $this->createQueryBuilder('su');
