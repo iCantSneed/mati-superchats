@@ -2,6 +2,7 @@
 .deploykey
 .htdeployment
 deployment.log
+html/external/
 
 ###> symfony/framework-bundle ###
 /.env.local

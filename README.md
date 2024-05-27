@@ -20,6 +20,11 @@ This web application is used to monitor, display, and archive superchats from th
   ```
 
 ### During Development
+* Grab external assets
+  ```bash
+  bash ./bin/assets
+  ```
+  These files should not be committed to the repository.
 * Monitor for and record new superchats during a livestream
   ```bash
   php bin/console mati:stream

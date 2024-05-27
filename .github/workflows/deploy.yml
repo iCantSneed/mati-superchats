@@ -16,6 +16,8 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+      - name: Download external assets
+        run: bash ./bin/assets
       - name: Deploy
         env:
           FTP_REMOTE: ${{ secrets.FTP_REMOTE }}

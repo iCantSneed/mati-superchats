@@ -1,0 +1,5 @@
+#!/bin/bash
+set -e
+mkdir -p html/external
+cd html/external
+curl -O https://cdnjs.cloudflare.com/ajax/libs/uswds/3.8.0/img/sprite.svg
