@@ -23,7 +23,7 @@ final class MatiController extends AbstractController
     return $this->render('index.html.twig');
   }
 
-  #[Route('/api/live')]
+  #[Route('/live', name: 'mati_live')]
   public function live(SuperchatStreamer $superchatStreamer): Response
   {
     $response = new StreamedResponse();

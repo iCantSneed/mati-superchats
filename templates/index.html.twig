@@ -8,7 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uswds/3.8.0/js/uswds-init.min.js" integrity="sha512-O4/iaC7XNMEYqktWqYtH6Rg++++GZAdUMITJVzu0D1X4ckQyXHJOoC4SC4Ivwsr8YMTjhSnDxem0Ac62IQuG1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     {% block importmap %}{{ importmap('app') }}{% endblock %}
   </head>
-  <body>
+  <body data-controller="live-superchats" data-live-superchats-live-url-value="{{ url('mati_live') }}">
     <div class="usa-overlay"></div>
     <header class="usa-header usa-header--basic">
       <div class="usa-nav-container">
@@ -26,11 +26,11 @@
           </button>
           <ul class="usa-nav__primary usa-accordion">
             <li class="usa-nav__primary-item">
-              <a class="usa-nav-link" title="Disconnected" id="conn-ind-link">
-                <svg class="usa-icon square-4 text-red" id="conn-ind-img">
+              <a class="usa-nav-link" title="Disconnected" data-live-superchats-target="indicatorLink">
+                <svg class="usa-icon square-4 text-red" data-live-superchats-target="indicatorImage">
                   <use href="{{ asset('external/sprite.svg') }}#electrical_services"></use>
                 </svg>
-                <span class="desktop:display-none" id="conn-ind-title">Disconnected</span>
+                <span class="desktop:display-none" data-live-superchats-target="indicatorTitle">Disconnected</span>
               </a>
             </li>
             <li class="usa-nav__primary-item">
