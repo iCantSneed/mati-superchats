@@ -4,11 +4,20 @@ This web application is used to monitor, display, and archive superchats from th
 * Superchat archives can be downloaded from the [Releases page](https://github.com/iCantSneed/mati-superchats/releases).
 
 ## Development
+### One-Time Requirements
 * Use the docker container and docker-compose files provided in this repository along with Visual Studio Code's devcontainers.
-* Set up the database by running
+* Install dependencies
+  ```bash
+  composer install
+  ```
+* Set up the database
   ```bash
   php bin/console doctrine:migrations:migrate
   ```
+* TODO load dummy data
+
+### During Development
+
 * Monitor for and record new superchats during a livestream by running
   ```bash
   php bin/console mati:stream
