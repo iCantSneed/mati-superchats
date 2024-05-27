@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
+import { connectStreamSource, disconnectStreamSource } from '@hotwired/turbo';
 
 export default class extends Controller {
   static targets = ['indicatorLink', 'indicatorImage', 'indicatorTitle'];
@@ -17,6 +18,11 @@ export default class extends Controller {
       console.error(e);
       this._setConnectionState('Connection Lost', 'red');
     };
+    connectStreamSource(this.eventSource);
+  }
+
+  disconnect() {
+    disconnectStreamSource(this.eventSource);
   }
 
   _setConnectionState(title, color) {

@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Mati\Superchat;
 
 use Mati\Ipc\IpcClient;
-use Symfony\Component\Serializer\SerializerInterface;
+use Twig\Environment;
 
 final readonly class SuperchatStreamer
 {
   public function __construct(
     private IpcClient $ipcClient,
     private SuperchatCache $superchatCache,
-    private SerializerInterface $serializer,
+    private Environment $twig,
   ) {
     // Do nothing.
   }
@@ -24,7 +24,10 @@ final readonly class SuperchatStreamer
     }
 
     $latestSuperchats = $this->superchatCache->getLatestSuperchats();
-    self::transmitSseMessage($this->serializer->serialize($latestSuperchats, 'json'));
+    $latestSuperchatsTemplate = $this->twig->render('superchat/show_latest_superchats.html.twig', [
+      'superchats_data' => $latestSuperchats,
+    ]);
+    self::transmitSseMessage($latestSuperchatsTemplate);
 
     foreach ($this->ipcClient->receive() as $message) {
       self::transmitSseMessage($message);

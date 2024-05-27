@@ -1,0 +1,5 @@
+<turbo-stream action="update" target="latest-superchats"><template>
+{%- for superchat in superchats_data.superchats -%}
+  {{- component('SuperchatMessage', { superchat: superchat }) -}}
+{%- endfor -%}
+</template></turbo-stream>
