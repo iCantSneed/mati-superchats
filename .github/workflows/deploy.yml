@@ -16,6 +16,8 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+      - name: Create revision file
+        run: echo "$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT" > .revision
       - name: Download external assets
         run: bash ./bin/assets
       - name: Deploy

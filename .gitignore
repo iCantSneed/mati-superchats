@@ -1,6 +1,7 @@
 .devcontainer/
 .deploykey
 .htdeployment
+.revision
 deployment.log
 assets/external/
 

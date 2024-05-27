@@ -17,6 +17,7 @@ return [
       /src
       /templates
       .env
+      .revision
       composer.json
       composer.lock
       importmap.php
