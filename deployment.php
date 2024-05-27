@@ -10,14 +10,16 @@ return [
   'mati' => [
     'remote' => $_ENV['FTP_REMOTE'],
     'include' => '
-      /bin
+      /assets
       /config
       /html
       /migrations
       /src
+      /templates
       .env
       composer.json
       composer.lock
+      importmap.php
     ',
     'allowDelete' => true,
     'before' => [
@@ -48,6 +50,7 @@ function cleanComposerJsonForProd(): void
     'autoload' => $composerJson['autoload'],
     'config' => $composerJson['config'],
     'replace' => $composerJson['replace'],
+    'extra' => $composerJson['extra'],
   ];
   foreach ($newComposerJson['config']['allow-plugins'] as &$value) {
     $value = false;

@@ -16,6 +16,13 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 final class MatiController extends AbstractController
 {
+  // TODO cache this route
+  #[Route('/')]
+  public function index(): Response
+  {
+    return $this->render('index.html.twig');
+  }
+
   #[Route('/api/live')]
   public function live(SuperchatStreamer $superchatStreamer): Response
   {

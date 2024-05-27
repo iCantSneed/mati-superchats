@@ -2,7 +2,7 @@
 .deploykey
 .htdeployment
 deployment.log
-html/external/
+assets/external/
 
 ###> symfony/framework-bundle ###
 /.env.local
@@ -18,3 +18,8 @@ html/external/
 /.php-cs-fixer.php
 /.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
+
+###> symfony/asset-mapper ###
+/html/assets/
+/assets/vendor/
+###< symfony/asset-mapper ###

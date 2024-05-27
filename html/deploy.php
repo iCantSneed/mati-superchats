@@ -51,6 +51,7 @@ return static function (array $context): void {
       break;
 
     case '2':
+      $runOrDie($application, ['command' => 'asset-map:compile', '-n' => true], $output);
       $runOrDie($application, ['command' => 'doctrine:migrations:migrate', '-n' => true], $output);
 
       break;

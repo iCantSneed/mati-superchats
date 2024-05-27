@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uswds/3.8.0/css/uswds.min.css" integrity="sha512-fxBZVlVQrZVKTlt4kr/hPDd1p0SYHuQxytgI9ccrYonBfAFTXbGPSL08YdYUA8DPXpW25F5G+nOjQK76s5USQQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uswds/3.8.0/js/uswds-init.min.js" integrity="sha512-O4/iaC7XNMEYqktWqYtH6Rg++++GZAdUMITJVzu0D1X4ckQyXHJOoC4SC4Ivwsr8YMTjhSnDxem0Ac62IQuG1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    {% block importmap %}{{ importmap('app') }}{% endblock %}
   </head>
   <body>
     <div class="usa-overlay"></div>
@@ -20,14 +21,14 @@
         <nav class="usa-nav">
           <button type="button" class="usa-nav__close">
             <svg class="usa-icon square-3">
-              <use href="external/sprite.svg#close"></use>
+              <use href="{{ asset('external/sprite.svg') }}#close"></use>
             </svg>
           </button>
           <ul class="usa-nav__primary usa-accordion">
             <li class="usa-nav__primary-item">
               <a class="usa-nav-link" title="Disconnected" id="conn-ind-link">
                 <svg class="usa-icon square-4 text-red" id="conn-ind-img">
-                  <use href="external/sprite.svg#electrical_services"></use>
+                  <use href="{{ asset('external/sprite.svg') }}#electrical_services"></use>
                 </svg>
                 <span class="desktop:display-none" id="conn-ind-title">Disconnected</span>
               </a>
@@ -35,7 +36,7 @@
             <li class="usa-nav__primary-item">
               <a href="https://github.com/iCantSneed/mati-superchats/releases" target="_blank" class="usa-nav-link" title="Superchats Archive">
                 <svg class="usa-icon square-4">
-                  <use href="external/sprite.svg#topic"></use>
+                  <use href="{{ asset('external/sprite.svg') }}#topic"></use>
                 </svg>
                 <span class="desktop:display-none">Superchats Archive</span>
               </a>
@@ -43,7 +44,7 @@
             <li class="usa-nav__primary-item">
               <a href="https://github.com/iCantSneed/mati-superchats" target="_blank" class="usa-nav-link" title="SneedHub">
                 <svg class="usa-icon square-4">
-                  <use href="external/sprite.svg#github"></use>
+                  <use href="{{ asset('external/sprite.svg') }}#github"></use>
                 </svg>
                 <span class="desktop:display-none">SneedHub</span>
               </a>
@@ -62,6 +63,5 @@
       </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uswds/3.8.0/js/uswds.min.js" integrity="sha512-V/eNPuqU6gTDHwQsFL5X12i0TzX5lwVvON6VuEeTXDoSnAeA5nnc53TUEhiUdT16s0nj4MXo6OcUBAvwhdFOAw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="script.js"></script>
   </body>
 </html>
