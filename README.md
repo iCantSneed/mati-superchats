@@ -14,19 +14,21 @@ This web application is used to monitor, display, and archive superchats from th
   ```bash
   php bin/console doctrine:migrations:migrate
   ```
-* TODO load dummy data
+* Load dummy data
+  ```bash
+  php bin/console doctrine:fixtures:load
+  ```
 
 ### During Development
-
-* Monitor for and record new superchats during a livestream by running
+* Monitor for and record new superchats during a livestream
   ```bash
   php bin/console mati:stream
   ```
-* To launch the web UI, first start apache by running
+* To launch the web UI, first start apache
   ```bash
   apache2ctl start
   ```
-  and navigating to the URL that Visual Studio Code provided, most likely http://localhost:8080.
+  and navigate to the URL that Visual Studio Code provided, most likely http://localhost:8080.
 
 ## Deployment
 We assume that the app will be deployed to `/srv/mati`.
