@@ -42,7 +42,7 @@ final readonly class SuperchatCache
     $prevStreamId = $superchats[0]->getStream()->getPrev()?->getId();
     \assert(null !== $prevStreamId);
 
-    $superchatsData = new SuperchatsData(superchats: $superchats, prevStreamId: $prevStreamId);
+    $superchatsData = new SuperchatsData(superchats: $superchats);
     $superchatsCacheItem->set($superchatsData);
     $this->cache->save($superchatsCacheItem);
 
@@ -69,13 +69,13 @@ final readonly class SuperchatCache
       $this->logger->notice('SuperchatCache: cache miss or superchats is not a valid object, refreshing cache');
       $superchats = $this->superchatRepository->findBy(['stream' => $stream]);
 
-      return new SuperchatsData(superchats: $superchats, prevStreamId: $prevStreamId);
+      return new SuperchatsData(superchats: $superchats);
     }
 
-    if ($superchatsData->prevStreamId !== $prevStreamId) {
-      $this->logger->notice('SuperchatCache: outdated prevStreamId, clearing cache');
+    if (!isset($superchatsData->superchats[0]) || $superchatsData->superchats[0]->getStream()->getPrev()?->getId() !== $prevStreamId) {
+      $this->logger->notice('SuperchatCache: no superchats or outdated prevStreamId, clearing cache');
 
-      return new SuperchatsData(superchats: [], prevStreamId: $prevStreamId);
+      return new SuperchatsData(superchats: []);
     }
 
     $this->logger->debug('SuperchatCache: cache hit', ['superchatsData' => $superchatsData]);

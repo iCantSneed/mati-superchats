@@ -13,7 +13,6 @@ final class SuperchatsData
    */
   public function __construct(
     public array $superchats,
-    public int $prevStreamId,
   ) {
     // Do nothing.
   }
