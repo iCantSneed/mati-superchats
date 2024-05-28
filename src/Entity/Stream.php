@@ -21,8 +21,10 @@ class Stream
   #[ORM\Column(type: Types::DATE_IMMUTABLE)]
   private ?\DateTimeImmutable $date = null;
 
-  public function getId(): ?int
+  public function getId(): int
   {
+    \assert(null !== $this->id);
+
     return $this->id;
   }
 
@@ -45,8 +47,10 @@ class Stream
     return $this;
   }
 
-  public function getDate(): ?\DateTimeImmutable
+  public function getDate(): \DateTimeImmutable
   {
+    \assert(null !== $this->date);
+
     return $this->date;
   }
 

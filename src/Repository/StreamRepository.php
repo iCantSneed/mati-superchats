@@ -33,13 +33,11 @@ class StreamRepository extends ServiceEntityRepository
       return $stream;
     }
 
-    $lastStreams = $this->createQueryBuilder('st')
+    $lastStream = $this->createQueryBuilder('st')
       ->where($this->latestStreamWherePredicate('st'))
       ->getQuery()
-      ->getResult()
+      ->getSingleResult()
     ;
-    \assert(\is_array($lastStreams) && 1 === \count($lastStreams));
-    [$lastStream] = $lastStreams;
     \assert($lastStream instanceof Stream);
 
     $stream = (new Stream())

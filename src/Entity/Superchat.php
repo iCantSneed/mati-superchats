@@ -33,8 +33,10 @@ class Superchat
   #[Ignore]
   private ?Stream $stream = null;
 
-  public function getId(): ?int
+  public function getId(): int
   {
+    \assert(null !== $this->id);
+
     return $this->id;
   }
 
@@ -45,8 +47,10 @@ class Superchat
     return $this;
   }
 
-  public function getUsername(): ?string
+  public function getUsername(): string
   {
+    \assert(null !== $this->username);
+
     return $this->username;
   }
 
@@ -57,8 +61,10 @@ class Superchat
     return $this;
   }
 
-  public function getPriceCents(): ?int
+  public function getPriceCents(): int
   {
+    \assert(null !== $this->price_cents);
+
     return $this->price_cents;
   }
 
@@ -69,8 +75,10 @@ class Superchat
     return $this;
   }
 
-  public function getMessage(): ?string
+  public function getMessage(): string
   {
+    \assert(null !== $this->message);
+
     return $this->message;
   }
 
@@ -81,11 +89,11 @@ class Superchat
     return $this;
   }
 
-  public function getCreated(): ?\DateTimeImmutable
+  public function getCreated(): \DateTimeImmutable
   {
-    return $this->created
-      ? new \DateTimeImmutable($this->created->format('Y-m-d H:i:s'), new \DateTimeZone('UTC'))
-      : null;
+    \assert(null !== $this->created);
+
+    return new \DateTimeImmutable($this->created->format('Y-m-d H:i:s'), new \DateTimeZone('UTC'));
   }
 
   public function setCreated(\DateTimeImmutable $created): static
@@ -95,8 +103,10 @@ class Superchat
     return $this;
   }
 
-  public function getStream(): ?Stream
+  public function getStream(): Stream
   {
+    \assert(null !== $this->stream);
+
     return $this->stream;
   }
 

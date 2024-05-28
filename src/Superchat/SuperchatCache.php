@@ -39,7 +39,7 @@ final readonly class SuperchatCache
     $this->logger->notice('SuperchatCache: cache miss or superchats is not a valid object, refreshing cache');
     $superchats = $this->superchatRepository->findLatest();
     \assert(isset($superchats[0]));
-    $prevStreamId = $superchats[0]->getStream()?->getPrev()?->getId();
+    $prevStreamId = $superchats[0]->getStream()->getPrev()?->getId();
     \assert(null !== $prevStreamId);
 
     $superchatsData = new SuperchatsData(superchats: $superchats, prevStreamId: $prevStreamId);
@@ -52,8 +52,6 @@ final readonly class SuperchatCache
   public function storeSuperchat(Superchat $superchat): void
   {
     $stream = $superchat->getStream();
-    \assert(null !== $stream);
-
     $superchatsCacheItem = $this->cache->getItem($this->cacheKey);
     $superchatsData = $this->getSuperchatsDataFromCache($superchatsCacheItem, $stream);
     $superchatsData->superchats[] = $superchat;

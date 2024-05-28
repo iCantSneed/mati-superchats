@@ -14,7 +14,7 @@ final class SuperchatMessage
 
   public function getPrice(): string
   {
-    $priceCents = $this->superchat->getPriceCents() ?? 0;
+    $priceCents = $this->superchat->getPriceCents();
     $dollars = $priceCents / 100;
     $cents = $priceCents % 100;
 
