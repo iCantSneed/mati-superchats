@@ -21,5 +21,4 @@ framework:
         pools:
             mati.cache:
                 adapters:
-                  - cache.adapter.apcu
                   - cache.adapter.filesystem

@@ -5,7 +5,6 @@
     "prefer-stable": true,
     "require": {
         "php": ">=8.3",
-        "ext-apcu": "*",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-sysvsem": "*",
