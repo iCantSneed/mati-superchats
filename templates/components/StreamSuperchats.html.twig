@@ -1,0 +1,6 @@
+<div{{ attributes.defaults({ id: this.htmlId(stream) }) }}>
+  <h2>{{ stream.date|date('F j, Y') }}</h2>
+  {%- for superchat in superchatsData.superchats -%}
+    {{- component('SuperchatMessage', { superchat: superchat }) -}}
+  {%- endfor -%}
+</div>

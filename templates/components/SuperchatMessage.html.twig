@@ -1,4 +1,4 @@
-<div{{ attributes }} class="usa-summary-box" id="superchat-{{ superchat.id }}">
+<div{{ attributes.defaults({ class: 'usa-summary-box', id: 'superchat-' ~ superchat.id }) }}>
   <div class="usa-summary-box__body">
     <h4 class="usa-summary-box__heading">
       {{ superchat.username }} for ${{ this.price }}

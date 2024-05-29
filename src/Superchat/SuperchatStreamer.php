@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mati\Superchat;
 
 use Mati\Ipc\IpcClient;
+use Mati\Twig\Components\StreamSuperchats;
 use Twig\Environment;
 
 final readonly class SuperchatStreamer
@@ -25,7 +26,8 @@ final readonly class SuperchatStreamer
 
     $latestSuperchats = $this->superchatCache->getLatestSuperchats();
     $latestSuperchatsTemplate = $this->twig->render('superchat/show_latest_superchats.html.twig', [
-      'superchats_data' => $latestSuperchats,
+      'superchatsData' => $latestSuperchats,
+      'streamHtmlId' => StreamSuperchats::htmlId($latestSuperchats->getStream()),
     ]);
     self::transmitSseMessage($latestSuperchatsTemplate);
 
