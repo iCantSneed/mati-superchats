@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mati\Superchat;
 
+use Mati\Entity\Superchat;
 use Mati\Ipc\IpcClient;
 use Mati\Twig\Components\StreamSuperchats;
 use Twig\Environment;
@@ -32,7 +33,14 @@ final readonly class SuperchatStreamer
     self::transmitSseMessage($latestSuperchatsTemplate);
 
     foreach ($this->ipcClient->receive() as $message) {
-      self::transmitSseMessage($message);
+      $superchat = (null !== $message) ? @unserialize($message) : null;
+      if ($superchat instanceof Superchat) {
+        $superchatTemplate = $this->twig->render('superchat/append_superchat.html.twig', [
+          'superchat' => $superchat,
+          'streamHtmlId' => StreamSuperchats::htmlId($superchat->getStream()),
+        ]);
+        self::transmitSseMessage($superchatTemplate);
+      }
 
       if (0 !== connection_aborted()) {
         return;

@@ -19,7 +19,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Serializer\SerializerInterface;
 
 #[AsCommand('mati:stream')]
 final class MatiStreamCommand extends Command
@@ -32,7 +31,6 @@ final class MatiStreamCommand extends Command
     private readonly ChatUrlFetcher $chatUrlFetcher,
     private readonly ChatClient $chatClient,
     private readonly SuperchatConverter $superchatConverter,
-    private readonly SerializerInterface $serializer,
     private readonly SuperchatCache $superchatCache,
     private readonly StreamRepository $streamRepository,
     private readonly SuperchatRepository $superchatRepository,
@@ -67,8 +65,8 @@ final class MatiStreamCommand extends Command
 
     foreach ($this->chatClient->readData($chatUrl) as $rumbleChatData) {
       foreach ($this->superchatConverter->extractSuperchats($rumbleChatData, $stream) as $superchat) {
-        $superchatJson = $this->serializer->serialize($superchat, 'json');
-        $this->logger->info('Received superchat', ['superchat' => $superchatJson]);
+        $superchatSerialized = serialize($superchat);
+        $this->logger->info('Received superchat', ['superchat' => $superchatSerialized]);
 
         if (!$this->superchatRepository->persistIfNew($superchat)) {
           $this->logger->warning('Superchat already exists', ['superchat' => $superchat]);
@@ -76,7 +74,7 @@ final class MatiStreamCommand extends Command
           continue;
         }
 
-        $this->ipcServer->send($superchatJson);
+        $this->ipcServer->send($superchatSerialized);
         $this->superchatCache->storeSuperchat($superchat);
       }
 
