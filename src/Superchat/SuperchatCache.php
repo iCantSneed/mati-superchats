@@ -38,7 +38,6 @@ final readonly class SuperchatCache
 
     $this->logger->notice('SuperchatCache: cache miss or superchats is not a valid object, refreshing cache');
     $superchats = $this->superchatRepository->findLatest();
-    \assert(isset($superchats[0]));
     $prevStreamId = $superchats[0]->getStream()->getPrev()?->getId();
     \assert(null !== $prevStreamId);
 
@@ -68,6 +67,7 @@ final readonly class SuperchatCache
     if (!$superchatsData instanceof SuperchatsData) {
       $this->logger->notice('SuperchatCache: cache miss or superchats is not a valid object, refreshing cache');
       $superchats = $this->superchatRepository->findBy(['stream' => $stream]);
+      \assert(!empty($superchats));
 
       return new SuperchatsData(superchats: $superchats);
     }
@@ -75,6 +75,11 @@ final readonly class SuperchatCache
     if (!isset($superchatsData->superchats[0]) || $superchatsData->superchats[0]->getStream()->getPrev()?->getId() !== $prevStreamId) {
       $this->logger->notice('SuperchatCache: no superchats or outdated prevStreamId, clearing cache');
 
+      /**
+       * TODO.
+       *
+       * @psalm-suppress ArgumentTypeCoercion
+       */
       return new SuperchatsData(superchats: []);
     }
 

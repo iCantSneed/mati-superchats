@@ -2,6 +2,7 @@
 .deploykey
 .htdeployment
 .revision
+.vscode/
 deployment.log
 assets/external/
 

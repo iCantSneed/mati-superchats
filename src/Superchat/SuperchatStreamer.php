@@ -25,27 +25,48 @@ final readonly class SuperchatStreamer
       return;
     }
 
-    $latestSuperchats = $this->superchatCache->getLatestSuperchats();
-    $latestSuperchatsTemplate = $this->twig->render('superchat/show_latest_superchats.html.twig', [
-      'superchatsData' => $latestSuperchats,
-      'streamHtmlId' => StreamSuperchats::htmlId($latestSuperchats->getStream()),
-    ]);
-    self::transmitSseMessage($latestSuperchatsTemplate);
+    $superchats = $this->superchatCache->getLatestSuperchats()->superchats;
+    $this->transmitLatestSuperchats($superchats);
+    $lastStreamId = $superchats[0]->getStream()->getId();
 
     foreach ($this->ipcClient->receive() as $message) {
-      $superchat = (null !== $message) ? @unserialize($message) : null;
-      if ($superchat instanceof Superchat) {
-        $superchatTemplate = $this->twig->render('superchat/append_superchat.html.twig', [
-          'superchat' => $superchat,
-          'streamHtmlId' => StreamSuperchats::htmlId($superchat->getStream()),
-        ]);
-        self::transmitSseMessage($superchatTemplate);
-      }
+      $this->transmitIpcMessage($message, $lastStreamId);
 
       if (0 !== connection_aborted()) {
         return;
       }
     }
+  }
+
+  private function transmitIpcMessage(?string $message, int &$lastStreamId): void
+  {
+    $superchat = (null !== $message) ? @unserialize($message) : null;
+    if (!$superchat instanceof Superchat) {
+      return;
+    }
+
+    if ($superchat->getStream()->getId() === $lastStreamId) {
+      $superchatTemplate = $this->twig->render('superchat/append_superchat.html.twig', [
+        'superchat' => $superchat,
+        'streamHtmlId' => StreamSuperchats::htmlId($superchat->getStream()),
+      ]);
+      self::transmitSseMessage($superchatTemplate);
+    } else {
+      $this->transmitLatestSuperchats([$superchat]);
+      $lastStreamId = $superchat->getStream()->getId();
+    }
+  }
+
+  /**
+   * @param non-empty-list<Superchat> $superchats
+   */
+  private function transmitLatestSuperchats(array $superchats): void
+  {
+    $latestSuperchatsTemplate = $this->twig->render('superchat/show_latest_superchats.html.twig', [
+      'superchats' => $superchats,
+      'streamHtmlId' => StreamSuperchats::htmlId($superchats[0]->getStream()),
+    ]);
+    self::transmitSseMessage($latestSuperchatsTemplate);
   }
 
   private static function transmitSseMessage(?string $message): void

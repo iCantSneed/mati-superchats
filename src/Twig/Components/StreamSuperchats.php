@@ -4,21 +4,18 @@ declare(strict_types=1);
 
 namespace Mati\Twig\Components;
 
-use Mati\Dto\SuperchatsData;
 use Mati\Entity\Stream;
+use Mati\Entity\Superchat;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
-use Symfony\UX\TwigComponent\Attribute\PostMount;
 
 #[AsTwigComponent]
 final class StreamSuperchats
 {
-  public SuperchatsData $superchatsData;
-  public Stream $stream;
+  /** @var non-empty-list<Superchat> */ public array $superchats;
 
-  #[PostMount]
-  public function postMount(): void
+  public function getStream(): Stream
   {
-    $this->stream = $this->superchatsData->getStream();
+    return $this->superchats[0]->getStream();
   }
 
   public static function htmlId(Stream $stream): string

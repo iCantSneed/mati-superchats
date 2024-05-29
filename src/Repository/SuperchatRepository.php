@@ -40,15 +40,18 @@ class SuperchatRepository extends ServiceEntityRepository
   }
 
   /**
-   * @return Superchat[]
+   * @return non-empty-list<Superchat>
    */
   public function findLatest(): array
   {
-    return $this->createQueryBuilder('su')
+    $superchats = $this->createQueryBuilder('su')
       ->innerJoin('su.stream', 'st', Expr\Join::WITH, $this->latestStreamWherePredicate('st'))
       ->getQuery()
       ->getResult()
     ;
+    \assert(!empty($superchats));
+
+    return $superchats;
   }
 
   public function findByDate(\DateTimeImmutable $date): array

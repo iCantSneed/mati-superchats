@@ -10,6 +10,7 @@ return (new PhpCsFixer\Config())
         '@PhpCsFixer' => true,
         '@PhpCsFixer:risky' => true,
         '@PHP80Migration:risky' => true,
+        'phpdoc_to_comment' => false,
     ])
     ->setFinder($finder)
     ->setIndent("  ")
