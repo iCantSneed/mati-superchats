@@ -8,27 +8,34 @@ use Mati\Dto\RumbleChat\Message;
 use Mati\Dto\RumbleChat\RumbleChatData;
 use Mati\Dto\RumbleChat\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
-#[Route(condition: "env('APP_ENV') == 'dev'")]
+#[Route('/dev', condition: "env('APP_ENV') == 'dev'")]
 final class DevController extends AbstractController
 {
-  #[Route('/api/dev/rss')]
-  public function devRssFeed(#[MapQueryParameter] ?string $start = null): Response
-  {
-    $start = $start ?? (string) random_int(0, PHP_INT_MAX);
-    $devRumbleVideoLink = "http://localhost/api/dev/rumble-video?start={$start}";
+  #[Route('/rss')]
+  public function devRssFeed(
+    #[MapQueryParameter]
+    ?string $start,
+    Request $request,
+  ): Response {
+    $start = $start ?? (string) random_int(0, 0xFFFF_FFFF);
+    $baseUrl = $request->getSchemeAndHttpHost();
+    $devRumbleVideoLink = $this->generateUrl('dev_rumble_video', ['start' => $start]);
     $rss = <<<EOF
     <?xml version="1.0" ?>
     <rss version="2.0">
     <channel>
       <title>Dev</title>
       <description>Dev</description>
-      <link>http://localhost</link>
+      <link>{$baseUrl}</link>
       <item>
         <title>Dev</title>
         <description>Dev</description>
@@ -41,15 +48,19 @@ final class DevController extends AbstractController
     return new Response($rss);
   }
 
-  #[Route('/api/dev/rumble-video')]
+  #[Route('/rumble-video', name: 'dev_rumble_video')]
   public function devRumbleVideo(#[MapQueryParameter] string $start): Response
   {
-    $str = "RumbleChat(\"http://localhost/api/dev\", {$start},";
+    $str = sprintf(
+      'RumbleChat("%s", %d,',
+      $this->generateUrl('dev_base', referenceType: UrlGeneratorInterface::ABSOLUTE_URL),
+      $start,
+    );
 
     return new Response($str);
   }
 
-  #[Route('/api/dev/chat/{start}/stream')]
+  #[Route('/chat/{start}/stream')]
   public function devLivestreamChat(string $start, SerializerInterface $serializer): Response
   {
     $response = new StreamedResponse();
@@ -64,6 +75,12 @@ final class DevController extends AbstractController
     });
 
     return $response;
+  }
+
+  #[Route('', name: 'dev_base')]
+  public function devLivestreamChatBase(): Response
+  {
+    throw new NotFoundHttpException();
   }
 
   private static function sendSuperchat(SerializerInterface $serializer, ?string $id = null): void

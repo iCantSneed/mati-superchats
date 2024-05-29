@@ -34,7 +34,7 @@ final class MatiController extends AbstractController
   }
 
   #[Route(
-    '/api/archive/{dateString}',
+    '/archive/{dateString}',
     condition: "request.headers.get('X-Mati-Archive') == env('".MatiConfiguration::ENV_ARCHIVE_SECRET."')"
   )
   ]

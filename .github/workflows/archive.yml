@@ -25,7 +25,7 @@ jobs:
       - id: retrieve_superchats
         name: Retrieve superchats
         run: |
-          curl -v -f -o superchats.csv -H 'X-Mati-Archive: ${{ secrets.ARCHIVE_SECRET }}' https://mati.x10.mx/api/archive/${{ steps.archive_date.outputs.archive_date }}
+          curl -v -f -o superchats.csv -H 'X-Mati-Archive: ${{ secrets.ARCHIVE_SECRET }}' https://mati.x10.mx/archive/${{ steps.archive_date.outputs.archive_date }}
           if [[ -s superchats.csv ]]; then
             zip -v -9 -P mati ${{ steps.archive_date.outputs.archive_date }}.zip superchats.csv
             echo "have_archive=true" >> "$GITHUB_OUTPUT"
