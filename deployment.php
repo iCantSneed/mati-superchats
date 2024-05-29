@@ -11,6 +11,7 @@ return [
     'remote' => $_ENV['FTP_REMOTE'],
     'include' => '
       /assets
+      /bin
       /config
       /html
       /migrations
