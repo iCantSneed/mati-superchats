@@ -33,6 +33,9 @@ class Superchat
   #[Ignore]
   private ?Stream $stream = null;
 
+  /**
+   * @psalm-suppress PossiblyUnusedMethod
+   */
   public function getId(): int
   {
     \assert(null !== $this->id);
@@ -47,6 +50,9 @@ class Superchat
     return $this;
   }
 
+  /**
+   * @psalm-suppress PossiblyUnusedMethod
+   */
   public function getUsername(): string
   {
     \assert(null !== $this->username);
@@ -75,6 +81,9 @@ class Superchat
     return $this;
   }
 
+  /**
+   * @psalm-suppress PossiblyUnusedMethod
+   */
   public function getMessage(): string
   {
     \assert(null !== $this->message);
@@ -89,6 +98,9 @@ class Superchat
     return $this;
   }
 
+  /**
+   * @psalm-suppress PossiblyUnusedMethod
+   */
   public function getCreated(): \DateTimeImmutable
   {
     \assert(null !== $this->created);

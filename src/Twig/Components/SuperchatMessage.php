@@ -7,6 +7,9 @@ namespace Mati\Twig\Components;
 use Mati\Entity\Superchat;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
+/**
+ * @psalm-suppress MissingConstructor all properties are set by UX Twig Components
+ */
 #[AsTwigComponent]
 final class SuperchatMessage
 {

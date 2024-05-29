@@ -22,11 +22,21 @@ class SuperchatRepository extends ServiceEntityRepository
 {
   use LatestStreamMixin;
 
+  /**
+   * TODO https://github.com/vimeo/psalm/issues/9216.
+   *
+   * @psalm-suppress PossiblyUnusedParam
+   */
   public function __construct(ManagerRegistry $registry)
   {
     parent::__construct($registry, Superchat::class);
   }
 
+  /**
+   * TODO https://github.com/vimeo/psalm/issues/9216.
+   *
+   * @psalm-suppress PossiblyUnusedParam
+   */
   public function persistIfNew(Superchat $superchat): bool
   {
     $existingSuperchat = $this->find($superchat->getId());
@@ -40,6 +50,10 @@ class SuperchatRepository extends ServiceEntityRepository
   }
 
   /**
+   * TODO https://github.com/vimeo/psalm/issues/9216.
+   *
+   * @psalm-suppress PossiblyUnusedParam
+   *
    * @return non-empty-list<Superchat>
    */
   public function findLatest(): array
@@ -54,6 +68,11 @@ class SuperchatRepository extends ServiceEntityRepository
     return $superchats;
   }
 
+  /**
+   * TODO https://github.com/vimeo/psalm/issues/9216.
+   *
+   * @psalm-suppress PossiblyUnusedParam
+   */
   public function findByDate(\DateTimeImmutable $date): array
   {
     $qb = $this->createQueryBuilder('su');

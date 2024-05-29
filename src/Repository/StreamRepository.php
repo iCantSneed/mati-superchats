@@ -21,11 +21,21 @@ class StreamRepository extends ServiceEntityRepository
 {
   use LatestStreamMixin;
 
+  /**
+   * TODO https://github.com/vimeo/psalm/issues/9216.
+   *
+   * @psalm-suppress PossiblyUnusedParam
+   */
   public function __construct(ManagerRegistry $registry)
   {
     parent::__construct($registry, Stream::class);
   }
 
+  /**
+   * TODO https://github.com/vimeo/psalm/issues/9216.
+   *
+   * @psalm-suppress PossiblyUnusedParam
+   */
   public function getOrCreateStream(int $id, \DateTimeImmutable $now): Stream
   {
     $stream = $this->find($id);

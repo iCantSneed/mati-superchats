@@ -47,6 +47,9 @@ class Stream
     return $this;
   }
 
+  /**
+   * @psalm-suppress PossiblyUnusedMethod
+   */
   public function getDate(): \DateTimeImmutable
   {
     \assert(null !== $this->date);
