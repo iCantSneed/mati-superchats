@@ -41,6 +41,7 @@ final readonly class SuperchatRenderer
   {
     return $this->twig->render('superchat/prepend_superchats.html.twig', [
       'superchats' => $superchats,
+      'loadPrevHtmlId' => StreamSuperchats::loadPrevHtmlId($superchats[0]->getStream()),
     ]);
   }
 }

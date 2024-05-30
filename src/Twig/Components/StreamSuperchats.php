@@ -28,4 +28,9 @@ final class StreamSuperchats
   {
     return "stream-{$stream->getId()}";
   }
+
+  public static function loadPrevHtmlId(Stream $stream): string
+  {
+    return "load-prev-{$stream->getId()}";
+  }
 }
