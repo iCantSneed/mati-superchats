@@ -1,5 +1,8 @@
 <div{{ attributes.defaults({ id: this.htmlId(computed.stream) }) }}>
-  <h2>{{ computed.stream.date|date('F j, Y') }}</h2>
+  <h2 class="display-inline">{{ computed.stream.date|date('F j, Y') }}</h2>
+  {%- if computed.stream.prev -%}
+    &nbsp;<a href="{{ url('mati_prev', {stream: computed.stream.prev.id}) }}" data-turbo-stream>(load previous stream superchats)</a>
+  {%- endif -%}
   {%- for superchat in superchats -%}
     {{- component('SuperchatMessage', { superchat: superchat }) -}}
   {%- endfor -%}

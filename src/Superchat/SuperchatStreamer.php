@@ -6,15 +6,13 @@ namespace Mati\Superchat;
 
 use Mati\Entity\Superchat;
 use Mati\Ipc\IpcClient;
-use Mati\Twig\Components\StreamSuperchats;
-use Twig\Environment;
 
 final readonly class SuperchatStreamer
 {
   public function __construct(
     private IpcClient $ipcClient,
     private SuperchatCache $superchatCache,
-    private Environment $twig,
+    private SuperchatRenderer $renderer,
   ) {
     // Do nothing.
   }
@@ -46,10 +44,7 @@ final readonly class SuperchatStreamer
     }
 
     if ($superchat->getStream()->getId() === $lastStreamId) {
-      $superchatTemplate = $this->twig->render('superchat/append_superchat.html.twig', [
-        'superchat' => $superchat,
-        'streamHtmlId' => StreamSuperchats::htmlId($superchat->getStream()),
-      ]);
+      $superchatTemplate = $this->renderer->appendSuperchat($superchat);
       self::transmitSseMessage($superchatTemplate);
     } else {
       $this->transmitLatestSuperchats([$superchat]);
@@ -62,10 +57,7 @@ final readonly class SuperchatStreamer
    */
   private function transmitLatestSuperchats(array $superchats): void
   {
-    $latestSuperchatsTemplate = $this->twig->render('superchat/show_latest_superchats.html.twig', [
-      'superchats' => $superchats,
-      'streamHtmlId' => StreamSuperchats::htmlId($superchats[0]->getStream()),
-    ]);
+    $latestSuperchatsTemplate = $this->renderer->showLatestSuperchats($superchats);
     self::transmitSseMessage($latestSuperchatsTemplate);
   }
 
