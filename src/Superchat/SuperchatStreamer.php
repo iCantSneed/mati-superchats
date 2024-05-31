@@ -23,7 +23,7 @@ final readonly class SuperchatStreamer
       return;
     }
 
-    $superchats = $this->superchatCache->getLatestSuperchats()->superchats;
+    $superchats = $this->superchatCache->getLatestSuperchats();
     $this->transmitLatestSuperchats($superchats);
     $lastStreamId = $superchats[0]->getStream()->getId();
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Mati\Superchat;
 
-use Mati\Dto\SuperchatsData;
 use Mati\Entity\Stream;
 use Mati\Entity\Superchat;
 use Mati\MatiConfiguration;
@@ -17,7 +16,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 final readonly class SuperchatCache
 {
   public function __construct(
-    private CacheItemPoolInterface $cache,
+    private CacheItemPoolInterface $superchatsCache,
     private SuperchatRepository $superchatRepository,
     private LoggerInterface $logger,
     #[Autowire(env: MatiConfiguration::ENV_SUPERCHATS_CACHE_KEY)]
@@ -26,66 +25,85 @@ final readonly class SuperchatCache
     // Do nothing.
   }
 
-  public function getLatestSuperchats(): SuperchatsData
+  /**
+   * @return non-empty-list<Superchat>
+   */
+  public function getLatestSuperchats(): array
   {
-    $superchatsCacheItem = $this->cache->getItem($this->cacheKey);
+    $superchatsCacheItem = $this->superchatsCache->getItem($this->cacheKey);
 
-    /** @psalm-suppress MixedAssignment */ $superchatsData = $superchatsCacheItem->get();
-    if ($superchatsData instanceof SuperchatsData) {
-      $this->logger->debug('SuperchatCache: cache hit', ['superchatsData' => $superchatsData]);
+    if (null !== ($superchats = self::extractSuperchats($superchatsCacheItem))) {
+      $this->logger->debug('SuperchatCache: cache hit', ['superchats' => $superchats]);
 
-      return $superchatsData;
+      return $superchats;
     }
 
     $this->logger->notice('SuperchatCache: cache miss or superchats is not a valid object, refreshing cache');
     $superchats = $this->superchatRepository->findLatest();
-    $prevStreamId = $superchats[0]->getStream()->getPrev()?->getId();
-    \assert(null !== $prevStreamId);
+    $superchatsCacheItem->set($superchats);
+    $this->superchatsCache->save($superchatsCacheItem);
 
-    $superchatsData = new SuperchatsData(superchats: $superchats);
-    $superchatsCacheItem->set($superchatsData);
-    $this->cache->save($superchatsCacheItem);
-
-    return $superchatsData;
+    return $superchats;
   }
 
   public function storeSuperchat(Superchat $superchat): void
   {
-    $stream = $superchat->getStream();
-    $superchatsCacheItem = $this->cache->getItem($this->cacheKey);
-    $superchatsData = $this->getSuperchatsDataFromCache($superchatsCacheItem, $stream);
-    $superchatsData->superchats[] = $superchat;
-    $superchatsCacheItem->set($superchatsData);
-    $this->cache->save($superchatsCacheItem);
+    $superchatsCacheItem = $this->superchatsCache->getItem($this->cacheKey);
+    $superchats = $this->getSuperchatsFromCache($superchatsCacheItem, $superchat->getStream());
+    $superchats[] = $superchat;
+    $superchatsCacheItem->set($superchats);
+    $this->superchatsCache->save($superchatsCacheItem);
   }
 
-  private function getSuperchatsDataFromCache(CacheItemInterface $superchatsCacheItem, Stream $stream): SuperchatsData
+  /**
+   * @return list<Superchat>
+   */
+  private function getSuperchatsFromCache(CacheItemInterface $superchatsCacheItem, Stream $stream): array
   {
     $prevStreamId = $stream->getPrev()?->getId();
     \assert(\is_int($prevStreamId));
 
-    $superchatsData = $superchatsCacheItem->get();
-    if (!$superchatsData instanceof SuperchatsData) {
-      $this->logger->notice('SuperchatCache: cache miss or superchats is not a valid object, refreshing cache');
+    if (null === ($superchats = self::extractSuperchats($superchatsCacheItem))) {
+      $this->logger->notice('SuperchatCache: cache miss or superchats is not a non-empty list, refreshing cache');
       $superchats = $this->superchatRepository->findBy(['stream' => $stream]);
-      // \assert(!empty($superchats) && array_is_list($superchats));
+      \assert(array_is_list($superchats));
 
-      return new SuperchatsData(superchats: $superchats);
+      return $superchats;
     }
 
-    if (!isset($superchatsData->superchats[0]) || $superchatsData->superchats[0]->getStream()->getPrev()?->getId() !== $prevStreamId) {
+    if ($superchats[0]->getStream()->getPrev()?->getId() !== $prevStreamId) {
       $this->logger->notice('SuperchatCache: no superchats or outdated prevStreamId, clearing cache');
 
-      /**
-       * TODO.
-       *
-       * @psalm-suppress ArgumentTypeCoercion
-       */
-      return new SuperchatsData(superchats: []);
+      return [];
     }
 
-    $this->logger->debug('SuperchatCache: cache hit', ['superchatsData' => $superchatsData]);
+    $this->logger->debug('SuperchatCache: cache hit', ['superchats' => $superchats]);
 
-    return $superchatsData;
+    return $superchats;
+  }
+
+  /**
+   * @return ?non-empty-list<Superchat>
+   */
+  private static function extractSuperchats(CacheItemInterface $superchatsCacheItem): ?array
+  {
+    /** @psalm-suppress MixedAssignment */ $superchats = $superchatsCacheItem->get();
+    if (!\is_array($superchats) || empty($superchats) || !array_is_list($superchats)) {
+      return null;
+    }
+
+    self::validateSuperchatsArray($superchats);
+
+    return $superchats;
+  }
+
+  /**
+   * @psalm-assert non-empty-list<Superchat> $superchats
+   */
+  private static function validateSuperchatsArray(array $superchats): void
+  {
+    foreach ($superchats as $superchat) {
+      \assert($superchat instanceof Superchat);
+    }
   }
 }

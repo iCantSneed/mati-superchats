@@ -17,8 +17,9 @@ framework:
         # Namespaced pools use the above "app" backend by default
         #pools:
             #my.dedicated.cache: null
-        app: mati.cache
+        app: cache.adapter.filesystem
         pools:
-            mati.cache:
+            superchats.cache:
                 adapters:
+                  - cache.adapter.array
                   - cache.adapter.filesystem
