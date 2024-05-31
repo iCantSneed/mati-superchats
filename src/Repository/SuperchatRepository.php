@@ -59,6 +59,7 @@ class SuperchatRepository extends ServiceEntityRepository
   public function findLatest(): array
   {
     $superchats = $this->createQueryBuilder('su')
+      ->select('su', 'st')
       ->innerJoin('su.stream', 'st', Expr\Join::WITH, $this->latestStreamWherePredicate('st'))
       ->getQuery()
       ->getResult()
