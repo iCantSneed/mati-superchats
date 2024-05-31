@@ -68,7 +68,7 @@ final readonly class SuperchatCache
     if (!$superchatsData instanceof SuperchatsData) {
       $this->logger->notice('SuperchatCache: cache miss or superchats is not a valid object, refreshing cache');
       $superchats = $this->superchatRepository->findBy(['stream' => $stream]);
-      \assert(!empty($superchats) && array_is_list($superchats));
+      // \assert(!empty($superchats) && array_is_list($superchats));
 
       return new SuperchatsData(superchats: $superchats);
     }

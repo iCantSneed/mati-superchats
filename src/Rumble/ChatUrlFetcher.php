@@ -34,7 +34,7 @@ final readonly class ChatUrlFetcher
     }
 
     $html = $response->getContent(false);
-    $matched = preg_match('/RumbleChat\("(.*?)", (\d+),/', $html, $matches);
+    $matched = preg_match('/RumbleChat\("(.*?)",.*?, (\d+),/', $html, $matches);
     if (1 !== $matched) {
       $this->logger->warning('ChatUrlFetcher: chat URL components not found', ['matched' => $matched]);
       $this->livestreamUrlCache->storeLastFailedLivestreamUrl($livestreamUrl);
