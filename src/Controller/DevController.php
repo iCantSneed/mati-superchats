@@ -26,7 +26,7 @@ final class DevController extends AbstractController
     ?string $start,
     Request $request,
   ): Response {
-    $start = $start ?? (string) random_int(0, 0xFFFF_FFFF);
+    $start = $start ?? (string) random_int(0, 0x7FFF_FFFF);
     $baseUrl = $request->getSchemeAndHttpHost();
     $devRumbleVideoLink = $this->generateUrl('dev_rumble_video', ['start' => $start]);
     $rss = <<<EOF
@@ -52,7 +52,7 @@ final class DevController extends AbstractController
   public function devRumbleVideo(#[MapQueryParameter] string $start): Response
   {
     $str = sprintf(
-      'RumbleChat("%s", %d,',
+      'RumbleChat("%s","bogus", %d,',
       $this->generateUrl('dev_base', referenceType: UrlGeneratorInterface::ABSOLUTE_URL),
       $start,
     );
