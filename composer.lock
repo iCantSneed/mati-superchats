@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8c654f09c155df4d6aa0423b8e4a7ca4",
+    "content-hash": "7b0b564ab2c557e4132b75fc5056660b",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -4631,16 +4631,16 @@
         },
         {
             "name": "symfony/lock",
-            "version": "v7.0.7",
+            "version": "v7.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/lock.git",
-                "reference": "9d6546f0223c1f441e2e6517ad3502c226ac0adb"
+                "reference": "464cf94dc2d4d11a1426ff1a6b97326b3ab63e05"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/lock/zipball/9d6546f0223c1f441e2e6517ad3502c226ac0adb",
-                "reference": "9d6546f0223c1f441e2e6517ad3502c226ac0adb",
+                "url": "https://api.github.com/repos/symfony/lock/zipball/464cf94dc2d4d11a1426ff1a6b97326b3ab63e05",
+                "reference": "464cf94dc2d4d11a1426ff1a6b97326b3ab63e05",
                 "shasum": ""
             },
             "require": {
@@ -4689,7 +4689,7 @@
                 "semaphore"
             ],
             "support": {
-                "source": "https://github.com/symfony/lock/tree/v7.0.7"
+                "source": "https://github.com/symfony/lock/tree/v7.1.0"
             },
             "funding": [
                 {
@@ -4705,7 +4705,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-04-18T09:29:19+00:00"
+            "time": "2024-05-02T08:41:59+00:00"
         },
         {
             "name": "symfony/monolog-bridge",
