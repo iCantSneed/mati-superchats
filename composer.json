@@ -84,11 +84,11 @@
         "lint": [
             "bin/console lint:container",
             "bin/console lint:yaml config/",
-            "/root/.composer/vendor/bin/php-cs-fixer check --allow-risky=yes -v",
-            "/root/.composer/vendor/bin/psalm"
+            "/root/composer-dev/vendor/bin/php-cs-fixer check --allow-risky=yes -v",
+            "/root/composer-psalm/vendor/bin/psalm"
         ],
         "fix": [
-            "/root/.composer/vendor/bin/php-cs-fixer fix --allow-risky=yes -v"
+            "/root/composer-dev/vendor/bin/php-cs-fixer fix --allow-risky=yes -v"
         ]
     },
     "conflict": {
