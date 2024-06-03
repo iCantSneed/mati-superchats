@@ -27,9 +27,9 @@ final readonly class ChatClient
   }
 
   /**
-   * @return iterable<RumbleChatData>
+   * @return \Iterator<RumbleChatData>
    */
-  public function readData(string $chatUrl): iterable
+  public function readData(string $chatUrl): \Iterator
   {
     $retryCount = 0;
     while (true) {

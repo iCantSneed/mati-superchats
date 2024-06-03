@@ -89,6 +89,9 @@
         ],
         "fix": [
             "/root/composer-dev/vendor/bin/php-cs-fixer fix --allow-risky=yes -v"
+        ],
+        "test:3rdparty": [
+            "/root/composer-dev/vendor/bin/phpunit --testsuite 3rdparty"
         ]
     },
     "conflict": {

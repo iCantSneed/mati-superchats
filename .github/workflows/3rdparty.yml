@@ -1,0 +1,19 @@
+name: 3rd Party Integration Tests
+on:
+  schedule:
+    - cron: '11 9 * * *'
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/icantsneed/mati-superchats:master
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: composer install
+      - name: Run tests
+        run: composer test:3rdparty

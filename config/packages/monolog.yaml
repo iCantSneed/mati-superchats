@@ -41,6 +41,8 @@ when@test:
                 type: stream
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
+            command:
+                type: noop
 
 when@prod:
     monolog:
