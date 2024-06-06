@@ -10,7 +10,7 @@ on:
     branches: [ "master" ]
     paths:
       - ".github/workflows/docker-publish.yml"
-      - "docker"
+      - "docker/**"
   workflow_dispatch:
 
 env:
