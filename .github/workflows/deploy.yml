@@ -24,4 +24,4 @@ jobs:
         env:
           FTP_REMOTE: ${{ secrets.FTP_REMOTE }}
           DEPLOYKEY: ${{ secrets.DEPLOYKEY }}
-        run: php /root/.composer/vendor/bin/deployment deployment.php
+        run: php /root/composer-dev/vendor/bin/deployment deployment.php
