@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mati\Superchat;
 
+use Mati\Dto\IpcMessage;
 use Mati\Entity\Superchat;
 use Mati\Ipc\IpcClient;
 
@@ -38,17 +39,22 @@ final readonly class SuperchatStreamer
 
   private function transmitIpcMessage(?string $message, int &$lastStreamId): void
   {
-    $superchat = (null !== $message) ? @unserialize($message) : null;
-    if (!$superchat instanceof Superchat) {
+    $ipcMessage = (null !== $message) ? @unserialize($message) : null;
+    if (!$ipcMessage instanceof IpcMessage) {
       return;
     }
 
-    if ($superchat->getStream()->getId() === $lastStreamId) {
-      $superchatTemplate = $this->renderer->appendSuperchat($superchat);
+    // TODO remove this
+    if (!isset($ipcMessage->superchats[0])) {
+      return;
+    }
+
+    if ($ipcMessage->superchats[0]->getStream()->getId() === $lastStreamId) {
+      $superchatTemplate = $this->renderer->appendSuperchat($ipcMessage->superchats[0]);
       self::transmitSseMessage($superchatTemplate);
     } else {
-      $this->transmitLatestSuperchats([$superchat]);
-      $lastStreamId = $superchat->getStream()->getId();
+      $this->transmitLatestSuperchats([$ipcMessage->superchats[0]]);
+      $lastStreamId = $ipcMessage->superchats[0]->getStream()->getId();
     }
   }
 

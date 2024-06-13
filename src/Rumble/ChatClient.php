@@ -27,22 +27,18 @@ final readonly class ChatClient
   }
 
   /**
-   * @return \Iterator<RumbleChatData>
+   * @return \Iterator<?RumbleChatData>
    */
   public function readData(string $chatUrl): \Iterator
   {
     $retryCount = 0;
     while (true) {
       $source = $this->client->connect($chatUrl);
-      foreach ($this->client->stream($source, 270) as $chunk) { // 4.5 minutes
+      foreach ($this->client->stream($source, 30) as $chunk) {
         if ($chunk->isTimeout()) {
           $this->logger->warning('ChatClient: chunk timeout');
-          ++$retryCount;
-          if ($retryCount >= self::MAX_RETRY_COUNT) {
-            $this->logger->notice('ChatClient: max retry count reached, closing connection');
 
-            return;
-          }
+          yield null;
 
           continue;
         }
@@ -55,6 +51,8 @@ final readonly class ChatClient
 
         if (!$chunk instanceof ServerSentEvent) {
           $this->logger->debug('ChatClient: chunk is not a SSE');
+
+          yield null;
 
           continue;
         }
