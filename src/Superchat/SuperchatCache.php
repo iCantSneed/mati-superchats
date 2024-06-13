@@ -6,21 +6,19 @@ namespace Mati\Superchat;
 
 use Mati\Entity\Stream;
 use Mati\Entity\Superchat;
-use Mati\MatiConfiguration;
 use Mati\Repository\SuperchatRepository;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 final readonly class SuperchatCache
 {
+  private const string SUPERCHATS_CACHE_KEY = 'mati.superchats';
+
   public function __construct(
     private CacheItemPoolInterface $superchatsCache,
     private SuperchatRepository $superchatRepository,
     private LoggerInterface $logger,
-    #[Autowire(env: MatiConfiguration::ENV_SUPERCHATS_CACHE_KEY)]
-    private string $cacheKey,
   ) {
     // Do nothing.
   }
@@ -30,7 +28,7 @@ final readonly class SuperchatCache
    */
   public function getLatestSuperchats(): array
   {
-    $superchatsCacheItem = $this->superchatsCache->getItem($this->cacheKey);
+    $superchatsCacheItem = $this->superchatsCache->getItem(self::SUPERCHATS_CACHE_KEY);
 
     if (null !== ($superchats = self::extractSuperchats($superchatsCacheItem))) {
       $this->logger->debug('SuperchatCache: cache hit', ['superchats' => $superchats]);
@@ -48,7 +46,7 @@ final readonly class SuperchatCache
 
   public function storeSuperchat(Superchat $superchat): void
   {
-    $superchatsCacheItem = $this->superchatsCache->getItem($this->cacheKey);
+    $superchatsCacheItem = $this->superchatsCache->getItem(self::SUPERCHATS_CACHE_KEY);
     $superchats = $this->getSuperchatsFromCache($superchatsCacheItem, $superchat->getStream());
     $superchats[] = $superchat;
     $superchatsCacheItem->set($superchats);

@@ -6,7 +6,6 @@ namespace Mati\Ipc;
 
 use Mati\MatiConfiguration;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 final class IpcServer
 {
@@ -14,8 +13,6 @@ final class IpcServer
 
   public function __construct(
     private readonly LoggerInterface $logger,
-    #[Autowire(env: MatiConfiguration::ENV_IPC_PORT)]
-    private readonly int $ipcPort,
   ) {
     // Do nothing.
   }
@@ -43,7 +40,7 @@ final class IpcServer
       \strlen($message),
       0,
       MatiConfiguration::IPC_ADDRESS,
-      $this->ipcPort
+      MatiConfiguration::IPC_PORT
     );
     $this->logger->debug('IpcServer: sent message', [
       'message' => $message,

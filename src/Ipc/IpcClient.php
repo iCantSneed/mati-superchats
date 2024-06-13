@@ -6,7 +6,6 @@ namespace Mati\Ipc;
 
 use Mati\MatiConfiguration;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 final class IpcClient
 {
@@ -14,8 +13,6 @@ final class IpcClient
 
   public function __construct(
     private readonly LoggerInterface $logger,
-    #[Autowire(env: MatiConfiguration::ENV_IPC_PORT)]
-    private readonly int $ipcPort,
   ) {
     // Do nothing.
   }
@@ -34,7 +31,7 @@ final class IpcClient
       return false;
     }
 
-    if (null === $this->sock || false === socket_bind($this->sock, MatiConfiguration::IPC_ADDRESS, $this->ipcPort)) {
+    if (null === $this->sock || false === socket_bind($this->sock, MatiConfiguration::IPC_ADDRESS, MatiConfiguration::IPC_PORT)) {
       return $this->logError('socket_bind: failure');
     }
 
