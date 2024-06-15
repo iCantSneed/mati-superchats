@@ -9,15 +9,22 @@ export default class extends Controller {
   };
 
   connect() {
-    this._setConnectionState('Connecting...', 'gold');
+    this._setConnectionState('Connecting...', 'orange');
     this.eventSource = new EventSource(this.liveUrlValue);
     this.eventSource.onopen = () => {
-      this._setConnectionState('Connected', 'green');
+      this._setConnectionState('Checking stream', 'gold');
     };
     this.eventSource.onerror = (e) => {
       console.error(e);
       this._setConnectionState('Connection Lost', 'red');
     };
+    this.eventSource.addEventListener('livestream_url', (event) => {
+      this._setConnectionState('Connected', 'green', event.data);
+    });
+    this.eventSource.addEventListener('nostream', () => {
+      this._setConnectionState('No stream', 'blue');
+      // TODO
+    });
     connectStreamSource(this.eventSource);
   }
 
@@ -25,7 +32,7 @@ export default class extends Controller {
     disconnectStreamSource(this.eventSource);
   }
 
-  _setConnectionState(title, color) {
+  _setConnectionState(title, color, link = null) {
     this.indicatorLinkTarget.title = title;
     this.indicatorTitleTarget.innerText = title;
     this.indicatorImageTarget.classList.forEach(cls => {
@@ -33,5 +40,10 @@ export default class extends Controller {
         this.indicatorImageTarget.classList.replace(cls, `text-${color}`)
       }
     });
+    if (link) {
+      this.indicatorLinkTarget.href = link;
+    } else {
+      this.indicatorLinkTarget.removeAttribute('href');
+    }
   }
 }
