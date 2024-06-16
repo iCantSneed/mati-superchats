@@ -14,6 +14,9 @@ jobs:
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+    environment:
+      name: prod
+      url: https://mati.x10.mx
     steps:
       - uses: actions/checkout@v4
       - name: Create revision file
