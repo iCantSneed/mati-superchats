@@ -30,7 +30,7 @@ export default class extends Controller {
     this.eventSource.onerror = (e) => {
       console.error(e);
       if (this.connected) {
-        this._setConnectionState('Connection Lost', 'red');
+        this._setConnectionState('Connection lost', 'red');
         this._destroyEventSource();
         this.connectionTimer = setTimeout(() => this._createEventSource(), 1000);
       } else {

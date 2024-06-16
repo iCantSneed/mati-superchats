@@ -53,16 +53,16 @@ final readonly class SuperchatStreamer
 
     self::transmitSseMessage($ipcMessage->livestreamUrl, 'livestream_url');
 
-    // TODO remove this
     if (!isset($ipcMessage->superchats[0])) {
       return;
     }
+    \assert(array_is_list($ipcMessage->superchats));
 
     if ($ipcMessage->superchats[0]->getStream()->getId() === $lastStreamId) {
-      $superchatTemplate = $this->renderer->appendSuperchat($ipcMessage->superchats[0]);
+      $superchatTemplate = $this->renderer->appendSuperchats($ipcMessage->superchats);
       self::transmitSseMessage($superchatTemplate);
     } else {
-      $this->transmitLatestSuperchats([$ipcMessage->superchats[0]]);
+      $this->transmitLatestSuperchats($ipcMessage->superchats);
       $lastStreamId = $ipcMessage->superchats[0]->getStream()->getId();
     }
   }
