@@ -9,27 +9,53 @@ export default class extends Controller {
   };
 
   connect() {
+    this._createEventSource();
+  }
+
+  disconnect() {
+    this._destroyEventSource();
+    if (this.connectionTimer) {
+      clearTimeout(this.connectionTimer);
+    }
+  }
+
+  _createEventSource() {
+    this._destroyEventSource();
     this._setConnectionState('Connecting...', 'orange');
     this.eventSource = new EventSource(this.liveUrlValue);
     this.eventSource.onopen = () => {
+      this.connected = true;
       this._setConnectionState('Checking stream', 'gold');
     };
     this.eventSource.onerror = (e) => {
       console.error(e);
-      this._setConnectionState('Connection Lost', 'red');
+      if (this.connected) {
+        this._setConnectionState('Connection Lost', 'red');
+        this._destroyEventSource();
+        this.connectionTimer = setTimeout(() => this._createEventSource(), 1000);
+      } else {
+        this._setConnectionState('Error, refresh page', 'red');
+        this._destroyEventSource();
+      }
     };
     this.eventSource.addEventListener('livestream_url', (event) => {
       this._setConnectionState('Connected', 'green', event.data);
     });
     this.eventSource.addEventListener('nostream', () => {
       this._setConnectionState('No stream', 'blue');
-      // TODO
+      this._destroyEventSource();
+      this.connectionTimer = setTimeout(() => this._createEventSource(), 120000);
     });
     connectStreamSource(this.eventSource);
   }
 
-  disconnect() {
-    disconnectStreamSource(this.eventSource);
+  _destroyEventSource() {
+    if (this.eventSource) {
+      this.eventSource.close();
+      disconnectStreamSource(this.eventSource);
+      this.eventSource = undefined;
+    }
+    this.connected = false;
   }
 
   _setConnectionState(title, color, link = null) {
