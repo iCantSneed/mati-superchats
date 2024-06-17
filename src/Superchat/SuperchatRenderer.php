@@ -20,7 +20,7 @@ final readonly class SuperchatRenderer
    */
   public function appendSuperchats(array $superchats): string
   {
-    return $this->twig->render('superchat/append_superchat.html.twig', [
+    return $this->twig->render('superchat/append_superchats.html.twig', [
       'superchats' => $superchats,
       'streamHtmlId' => StreamSuperchats::htmlId($superchats[0]->getStream()),
     ]);
