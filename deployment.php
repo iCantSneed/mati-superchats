@@ -66,7 +66,7 @@ function cleanComposerJsonForProd(): void
 function deployStage(string $stage): callable
 {
   return static function (Server $server, Logger $logger, Deployer $deployer) use ($stage): bool {
-    $out = Helpers::fetchUrl('https://mati.x10.mx/deploy.php', $err, ['secret' => $_ENV['DEPLOYKEY'], 'stage' => $stage]);
+    $out = Helpers::fetchUrl($_ENV['ROOT_URL'].'/deploy.php', $err, ['secret' => $_ENV['DEPLOYKEY'], 'stage' => $stage]);
     if (null !== $out) { // intentionally ==
       $logger->log($out, 'gray', 0);
     }
