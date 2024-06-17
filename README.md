@@ -40,6 +40,7 @@ We assume that the app will be deployed to `/srv/mati`.
 
 ### One-Time Requirements
 * Create a symlink from the public_html-equivalent to `/srv/mati/html`.
+* Get a copy of the vendor directory into `/srv/mati`.
 * Create a cronjob which every 10 minutes runs
   ```bash
    php /srv/mati/bin/console mati:stream
