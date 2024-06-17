@@ -6,6 +6,25 @@ on:
         description: 'Container tag'
         required: true
         default: 'master'
+      environmentName:
+        description: 'Deployment environment'
+        required: true
+        default: 'prod'
+      environmentUrl:
+        description: 'Deployment environment URL'
+        required: true
+        default: 'https://mati.x10.mx'
+  workflow_call:
+    inputs:
+      containerTag:
+        type: string
+        default: 'master'
+      environmentName:
+        type: string
+        required: true
+      environmentUrl:
+        type: string
+        required: true
 jobs:
   build_deploy:
     runs-on: ubuntu-latest
@@ -14,6 +33,9 @@ jobs:
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+    environment:
+      name: ${{ inputs.environmentName }}
+      url: ${{ inputs.environmentUrl }}
     steps:
       - uses: actions/checkout@v4
       - name: Create revision file
@@ -24,4 +46,5 @@ jobs:
         env:
           FTP_REMOTE: ${{ secrets.FTP_REMOTE }}
           DEPLOYKEY: ${{ secrets.DEPLOYKEY }}
+          ROOT_URL: ${{ inputs.environmentUrl }}
         run: php /root/composer-dev/vendor/bin/deployment deployment.php

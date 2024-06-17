@@ -3,6 +3,11 @@ on:
   push:
     branches:
       - master
+      - staging
+    paths-ignore:
+      - '.github/**'
+      - '!.github/workflows/ci.yml'
+      - 'README.md'
   pull_request:
 jobs:
   ci:
@@ -18,3 +23,19 @@ jobs:
         run: composer install
       - name: Run lint
         run: composer lint
+  deploy_prod:
+    name: Deploy to prod
+    if: ${{ github.ref_name == 'master' }}
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environmentName: 'prod'
+      environmentUrl: 'https://mati.x10.mx'
+    secrets: inherit
+  deploy_staging:
+    name: Deploy to staging
+    if: ${{ github.ref_name == 'staging' }}
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environmentName: 'staging'
+      environmentUrl: 'https://staging.mati.x10.mx'
+    secrets: inherit
