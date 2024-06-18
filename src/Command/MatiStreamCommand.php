@@ -43,7 +43,7 @@ final class MatiStreamCommand extends Command
   #[\Override]
   protected function execute(InputInterface $input, OutputInterface $output): int
   {
-    if (!$this->lock()) {
+    if (!$this->lock(__FILE__)) {
       $this->logger->notice('An instance of this command is already running');
 
       return Command::FAILURE;
