@@ -39,7 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Create revision file
-        run: echo "$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT" > .revision
+        run: echo "$GITHUB_REF_NAME-$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT" > templates/revision
       - name: Download external assets
         run: bash ./bin/assets
       - name: Deploy

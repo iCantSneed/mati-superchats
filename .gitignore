@@ -1,10 +1,10 @@
 .devcontainer/
 .deploykey
 .htdeployment
-.revision
 .vscode/
 deployment.log
 assets/external/
+templates/revision
 
 ###> symfony/framework-bundle ###
 /.env.local

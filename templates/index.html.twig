@@ -62,6 +62,15 @@
         </div>
       </div>
     </div>
+    <div class="usa-identifier">
+      <section class="usa-identifier__section usa-identifier__section--usagov">
+        <div class="usa-identifier__container">
+          <p>Copyright &copy;{{ "now"|date("Y") }}. Licensed under <a href="https://github.com/iCantSneed/mati-superchats/blob/master/LICENSE">GNU Affero General Public License v3.0</a>.</p>
+          <p>The owners and operators of this website take no responsibility and assume no liability for any user content that you or any other person or third party posts or sends using the service.</p>
+          <p>Version: {{ include('revision', ignore_missing = true)|default('dev') }}</p>
+        </div>
+      </section>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uswds/3.8.0/js/uswds.min.js" integrity="sha512-V/eNPuqU6gTDHwQsFL5X12i0TzX5lwVvON6VuEeTXDoSnAeA5nnc53TUEhiUdT16s0nj4MXo6OcUBAvwhdFOAw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   </body>
 </html>
