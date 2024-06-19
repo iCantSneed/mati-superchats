@@ -1,0 +1,6 @@
+<h1>MATI Console</h1>
+<ul>
+{% for file in files %}
+  <li><a href="{{ url('admin_read_log', {logFile: file.relativePathname}) }}">{{ file.relativePathname }}</a></li>
+{% endfor %}
+</ul>
