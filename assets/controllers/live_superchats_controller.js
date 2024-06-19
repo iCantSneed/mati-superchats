@@ -9,23 +9,56 @@ export default class extends Controller {
   };
 
   connect() {
-    this._setConnectionState('Connecting...', 'gold');
-    this.eventSource = new EventSource(this.liveUrlValue);
-    this.eventSource.onopen = () => {
-      this._setConnectionState('Connected', 'green');
-    };
-    this.eventSource.onerror = (e) => {
-      console.error(e);
-      this._setConnectionState('Connection Lost', 'red');
-    };
-    connectStreamSource(this.eventSource);
+    this._createEventSource();
   }
 
   disconnect() {
-    disconnectStreamSource(this.eventSource);
+    this._destroyEventSource();
+    if (this.connectionTimer) {
+      clearTimeout(this.connectionTimer);
+    }
   }
 
-  _setConnectionState(title, color) {
+  _createEventSource() {
+    this._destroyEventSource();
+    this._setConnectionState('Connecting...', 'orange');
+    this.eventSource = new EventSource(this.liveUrlValue);
+    this.eventSource.onopen = () => {
+      this.connected = true;
+      this._setConnectionState('Checking stream', 'gold');
+    };
+    this.eventSource.onerror = (e) => {
+      console.error(e);
+      if (this.connected) {
+        this._setConnectionState('Connection lost', 'red');
+        this._destroyEventSource();
+        this.connectionTimer = setTimeout(() => this._createEventSource(), 1000);
+      } else {
+        this._setConnectionState('Error, refresh page', 'red');
+        this._destroyEventSource();
+      }
+    };
+    this.eventSource.addEventListener('livestream_url', (event) => {
+      this._setConnectionState('Connected', 'green', event.data);
+    });
+    this.eventSource.addEventListener('nostream', () => {
+      this._setConnectionState('No stream', 'blue');
+      this._destroyEventSource();
+      this.connectionTimer = setTimeout(() => this._createEventSource(), 120000);
+    });
+    connectStreamSource(this.eventSource);
+  }
+
+  _destroyEventSource() {
+    if (this.eventSource) {
+      this.eventSource.close();
+      disconnectStreamSource(this.eventSource);
+      this.eventSource = undefined;
+    }
+    this.connected = false;
+  }
+
+  _setConnectionState(title, color, link = null) {
     this.indicatorLinkTarget.title = title;
     this.indicatorTitleTarget.innerText = title;
     this.indicatorImageTarget.classList.forEach(cls => {
@@ -33,5 +66,10 @@ export default class extends Controller {
         this.indicatorImageTarget.classList.replace(cls, `text-${color}`)
       }
     });
+    if (link) {
+      this.indicatorLinkTarget.href = link;
+    } else {
+      this.indicatorLinkTarget.removeAttribute('href');
+    }
   }
 }

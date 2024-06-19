@@ -20,7 +20,7 @@ final class IpcClient
     // Do nothing.
   }
 
-  public function init(): bool
+  public function init(int $timeoutSeconds): bool
   {
     if (!$this->socketCreate()) {
       return false;
@@ -30,7 +30,7 @@ final class IpcClient
       return false;
     }
 
-    if (!$this->socketSetOption(SO_RCVTIMEO, 'SO_RCVTIMEO', ['sec' => 30, 'usec' => 0])) {
+    if (!$this->socketSetOption(SO_RCVTIMEO, 'SO_RCVTIMEO', ['sec' => $timeoutSeconds, 'usec' => 0])) {
       return false;
     }
 

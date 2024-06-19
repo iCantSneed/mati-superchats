@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mati\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Mati\Dto\IpcMessage;
 use Mati\Ipc\IpcServer;
 use Mati\Repository\StreamRepository;
 use Mati\Repository\SuperchatRepository;
@@ -49,10 +50,6 @@ final class MatiStreamCommand extends Command
       return Command::FAILURE;
     }
 
-    if (!$this->ipcServer->init()) {
-      return Command::FAILURE;
-    }
-
     if (($livestreamUrl = $this->livestreamUrlFetcher->fetchLivestreamUrl()) === null) {
       return Command::FAILURE;
     }
@@ -60,25 +57,36 @@ final class MatiStreamCommand extends Command
     if (($chatUrlAndId = $this->chatUrlFetcher->fetchChatUrl($livestreamUrl)) === null) {
       return Command::FAILURE;
     }
+
+    if (!$this->ipcServer->init()) {
+      return Command::FAILURE;
+    }
+
     [$chatUrl, $streamId] = $chatUrlAndId;
     $stream = $this->streamRepository->getOrCreateStream($streamId, new \DateTimeImmutable());
 
     foreach ($this->chatClient->readData($chatUrl) as $rumbleChatData) {
-      foreach ($this->superchatConverter->extractSuperchats($rumbleChatData, $stream) as $superchat) {
-        $superchatSerialized = serialize($superchat);
-        $this->logger->info('Received superchat', ['superchat' => $superchatSerialized]);
+      $ipcMessage = new IpcMessage($livestreamUrl);
 
-        if (!$this->superchatRepository->persistIfNew($superchat)) {
-          $this->logger->warning('Superchat already exists', ['superchat' => $superchat]);
+      if (null !== $rumbleChatData) {
+        foreach ($this->superchatConverter->extractSuperchats($rumbleChatData, $stream) as $superchat) {
+          $superchatSerialized = serialize($superchat);
+          $this->logger->info('Received superchat', ['superchat' => $superchatSerialized]);
 
-          continue;
+          if (!$this->superchatRepository->persistIfNew($superchat)) {
+            $this->logger->warning('Superchat already exists', ['superchat' => $superchatSerialized]);
+
+            continue;
+          }
+
+          $ipcMessage->superchats[] = $superchat;
+          $this->superchatCache->storeSuperchat($superchat);
         }
 
-        $this->ipcServer->send($superchatSerialized);
-        $this->superchatCache->storeSuperchat($superchat);
+        $this->entityManager->flush();
       }
 
-      $this->entityManager->flush();
+      $this->ipcServer->send(serialize($ipcMessage));
     }
 
     return Command::SUCCESS;

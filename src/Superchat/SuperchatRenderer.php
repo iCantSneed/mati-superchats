@@ -15,11 +15,14 @@ final readonly class SuperchatRenderer
     // Do nothing.
   }
 
-  public function appendSuperchat(Superchat $superchat): string
+  /**
+   * @param non-empty-list<Superchat> $superchats
+   */
+  public function appendSuperchats(array $superchats): string
   {
-    return $this->twig->render('superchat/append_superchat.html.twig', [
-      'superchat' => $superchat,
-      'streamHtmlId' => StreamSuperchats::htmlId($superchat->getStream()),
+    return $this->twig->render('superchat/append_superchats.html.twig', [
+      'superchats' => $superchats,
+      'streamHtmlId' => StreamSuperchats::htmlId($superchats[0]->getStream()),
     ]);
   }
 

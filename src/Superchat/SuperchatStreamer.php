@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Mati\Superchat;
 
+use Mati\Dto\IpcMessage;
 use Mati\Entity\Superchat;
 use Mati\Ipc\IpcClient;
+use Mati\MatiConfiguration;
 
 final readonly class SuperchatStreamer
 {
@@ -19,7 +21,7 @@ final readonly class SuperchatStreamer
 
   public function streamEvents(): void
   {
-    if (!$this->ipcClient->init()) {
+    if (!$this->ipcClient->init(MatiConfiguration::LIVE_CHAT_TIMEOUT_SECONDS)) {
       return;
     }
 
@@ -28,6 +30,12 @@ final readonly class SuperchatStreamer
     $lastStreamId = $superchats[0]->getStream()->getId();
 
     foreach ($this->ipcClient->receive() as $message) {
+      if (null === $message) {
+        self::transmitSseMessage('', 'nostream');
+
+        return;
+      }
+
       $this->transmitIpcMessage($message, $lastStreamId);
 
       if (0 !== connection_aborted()) {
@@ -36,19 +44,26 @@ final readonly class SuperchatStreamer
     }
   }
 
-  private function transmitIpcMessage(?string $message, int &$lastStreamId): void
+  private function transmitIpcMessage(string $message, int &$lastStreamId): void
   {
-    $superchat = (null !== $message) ? @unserialize($message) : null;
-    if (!$superchat instanceof Superchat) {
+    $ipcMessage = @unserialize($message);
+    if (!$ipcMessage instanceof IpcMessage) {
       return;
     }
 
-    if ($superchat->getStream()->getId() === $lastStreamId) {
-      $superchatTemplate = $this->renderer->appendSuperchat($superchat);
+    self::transmitSseMessage($ipcMessage->livestreamUrl, 'livestream_url');
+
+    if (!isset($ipcMessage->superchats[0])) {
+      return;
+    }
+    \assert(array_is_list($ipcMessage->superchats));
+
+    if ($ipcMessage->superchats[0]->getStream()->getId() === $lastStreamId) {
+      $superchatTemplate = $this->renderer->appendSuperchats($ipcMessage->superchats);
       self::transmitSseMessage($superchatTemplate);
     } else {
-      $this->transmitLatestSuperchats([$superchat]);
-      $lastStreamId = $superchat->getStream()->getId();
+      $this->transmitLatestSuperchats($ipcMessage->superchats);
+      $lastStreamId = $ipcMessage->superchats[0]->getStream()->getId();
     }
   }
 
@@ -61,13 +76,15 @@ final readonly class SuperchatStreamer
     self::transmitSseMessage($latestSuperchatsTemplate);
   }
 
-  private static function transmitSseMessage(?string $message): void
+  private static function transmitSseMessage(string $message, ?string $event = null): void
   {
-    if (null !== $message) {
-      $lines = explode(separator: "\n", string: $message);
-      foreach ($lines as $line) {
-        echo "data: {$line}\n";
-      }
+    if (null !== $event) {
+      echo "event: {$event}\n";
+    }
+
+    $lines = explode(separator: "\n", string: $message);
+    foreach ($lines as $line) {
+      echo "data: {$line}\n";
     }
 
     echo "\n";
