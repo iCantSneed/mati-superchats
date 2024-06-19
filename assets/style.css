@@ -3,3 +3,11 @@ body {
   display: grid;
   grid-template-rows: auto 1fr auto;
 }
+
+.usa-nav__primary {
+  margin-top: 0;
+}
+
+.usa-nav__primary-item {
+  border-top: 0;
+}

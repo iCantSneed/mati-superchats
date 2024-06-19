@@ -2,7 +2,7 @@ import { Controller } from '@hotwired/stimulus';
 import { connectStreamSource, disconnectStreamSource } from '@hotwired/turbo';
 
 export default class extends Controller {
-  static targets = ['indicatorLink', 'indicatorImage', 'indicatorTitle'];
+  static targets = ['indicatorLink', 'indicatorImage'];
 
   static values = {
     liveUrl: String,
@@ -60,7 +60,6 @@ export default class extends Controller {
 
   _setConnectionState(title, color, link = null) {
     this.indicatorLinkTarget.title = title;
-    this.indicatorTitleTarget.innerText = title;
     this.indicatorImageTarget.classList.forEach(cls => {
       if (cls.startsWith('text-')) {
         this.indicatorImageTarget.classList.replace(cls, `text-${color}`)
