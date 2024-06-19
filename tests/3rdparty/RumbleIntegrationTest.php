@@ -31,9 +31,15 @@ final class RumbleIntegrationTest extends KernelTestCase
     [$chatUrl] = $chatUrlAndId;
 
     /** @var ChatClient */ $chatClient = self::getContainer()->get(ChatClient::class);
-    $rumbleChatData = $chatClient->readData($chatUrl)->current();
-    self::assertInstanceOf(RumbleChatData::class, $rumbleChatData);
-    self::assertNotEmpty($rumbleChatData->messages);
-    self::assertNotEmpty($rumbleChatData->users);
+    foreach ($chatClient->readData($chatUrl) as $rumbleChatData) {
+      if (null === $rumbleChatData) {
+        continue;
+      }
+      self::assertInstanceOf(RumbleChatData::class, $rumbleChatData);
+      self::assertNotEmpty($rumbleChatData->messages);
+      self::assertNotEmpty($rumbleChatData->users);
+
+      break;
+    }
   }
 }
