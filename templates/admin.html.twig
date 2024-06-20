@@ -4,3 +4,4 @@
   <li><a href="{{ url('admin_read_log', {logFile: file.relativePathname}) }}">{{ file.relativePathname }}</a></li>
 {% endfor %}
 </ul>
+<div><a href="{{ url('admin_terminate') }}">Terminate CLI</a></div>

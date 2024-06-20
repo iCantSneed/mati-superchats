@@ -7,6 +7,7 @@ namespace Mati\Command;
 use Doctrine\ORM\EntityManagerInterface;
 use Mati\Dto\IpcMessage;
 use Mati\Ipc\IpcServer;
+use Mati\Ipc\Terminator;
 use Mati\Repository\StreamRepository;
 use Mati\Repository\SuperchatRepository;
 use Mati\Rumble\ChatClient;
@@ -36,6 +37,7 @@ final class MatiStreamCommand extends Command
     private readonly StreamRepository $streamRepository,
     private readonly SuperchatRepository $superchatRepository,
     private readonly EntityManagerInterface $entityManager,
+    private readonly Terminator $terminator,
     private readonly LoggerInterface $logger,
   ) {
     parent::__construct();
@@ -87,6 +89,12 @@ final class MatiStreamCommand extends Command
       }
 
       $this->ipcServer->send(serialize($ipcMessage));
+
+      if ($this->terminator->shouldTerminate()) {
+        $this->logger->warning('Terminating as commanded');
+
+        return Command::FAILURE;
+      }
     }
 
     return Command::SUCCESS;

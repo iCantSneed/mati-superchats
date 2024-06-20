@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Mati\Controller;
 
+use Mati\Ipc\Terminator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/admin')]
-class AdminController extends AbstractController
+final class AdminController extends AbstractController
 {
   #[Route('/')]
   public function index(#[Autowire(param: 'kernel.logs_dir')] string $logsDir): Response
@@ -37,5 +37,13 @@ class AdminController extends AbstractController
     }
 
     return new StreamedResponse(static fn () => readfile($logFilename), headers: ['Content-Type' => 'text/plain']);
+  }
+
+  #[Route('/terminate', name: 'admin_terminate')]
+  public function terminate(Terminator $terminator): Response
+  {
+    $status = $terminator->sendTerminate() ? 'OK' : 'ERROR';
+
+    return new Response("Termination status: {$status}");
   }
 }
