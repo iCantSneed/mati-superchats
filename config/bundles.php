@@ -9,6 +9,7 @@ use Symfony\Bundle\DebugBundle\DebugBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MakerBundle\MakerBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
+use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 use Symfony\UX\StimulusBundle\StimulusBundle;
@@ -30,4 +31,5 @@ return [
   StimulusBundle::class => ['all' => true],
   TwigComponentBundle::class => ['all' => true],
   TurboBundle::class => ['all' => true],
+  SecurityBundle::class => ['all' => true],
 ];
