@@ -44,7 +44,7 @@ when@prod:
             main:
                 type: rotating_file
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
-                level: info
+                level: notice
                 max_files: 7
             command:
                 type: rotating_file
