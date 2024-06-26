@@ -1,19 +1,4 @@
-name: Build and Deploy
 on:
-  workflow_dispatch:
-    inputs:
-      containerTag:
-        description: 'Container tag'
-        required: true
-        default: 'master'
-      environmentName:
-        description: 'Deployment environment'
-        required: true
-        default: 'prod'
-      environmentUrl:
-        description: 'Deployment environment URL'
-        required: true
-        default: 'https://mati.x10.mx'
   workflow_call:
     inputs:
       containerTag:
@@ -39,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Create revision file
-        run: echo "$GITHUB_REF_NAME-$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT" > templates/revision
+        run: echo "${{ inputs.environmentName }}-$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT" > templates/revision
       - name: Download external assets
         run: bash ./bin/assets
       - name: Deploy

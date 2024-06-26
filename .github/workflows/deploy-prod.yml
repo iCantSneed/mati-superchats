@@ -1,0 +1,23 @@
+name: Deploy to prod
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '.github/**'
+      - '!.github/workflows/deploy-prod.yml'
+      - '!.github/workflows/reusable-ci.yml'
+      - 'README.md'
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/reusable-ci.yml
+    secrets: inherit
+  deploy:
+    name: Deploy
+    needs: [ci]
+    uses: ./.github/workflows/reusable-deploy.yml
+    with:
+      environmentName: 'prod'
+      environmentUrl: 'https://mati.x10.mx'
+    secrets: inherit
