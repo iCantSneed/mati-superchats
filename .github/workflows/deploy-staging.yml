@@ -1,0 +1,23 @@
+name: Deploy to staging
+on:
+  push:
+    branches:
+      - staging
+    paths-ignore:
+      - '.github/**'
+      - '!.github/workflows/deploy-staging.yml'
+      - '!.github/workflows/reusable-ci.yml'
+      - 'README.md'
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/reusable-ci.yml
+    secrets: inherit
+  deploy:
+    name: Deploy
+    needs: [ci]
+    uses: ./.github/workflows/reusable-deploy.yml
+    with:
+      environmentName: 'staging'
+      environmentUrl: 'https://staging.mati.x10.mx'
+    secrets: inherit
