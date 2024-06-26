@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace Mati;
 
-use Monolog\Handler\HandlerInterface;
 use Monolog\Logger;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Psr\Log\LoggerInterface;
 
 final readonly class CommandLoggerConfigurator
 {
   private bool $overrideLogger;
 
   public function __construct(
-    #[Autowire(service: 'monolog.handler.command')]
-    private HandlerInterface $commandHandler
+    private LoggerInterface $clionlyLogger,
   ) {
     $this->overrideLogger = \PHP_SAPI === 'cli';
   }
@@ -22,7 +20,8 @@ final readonly class CommandLoggerConfigurator
   public function configure(Logger $logger): void
   {
     if ($this->overrideLogger) {
-      $logger->setHandlers([$this->commandHandler]);
+      \assert($this->clionlyLogger instanceof Logger);
+      $logger->setHandlers($this->clionlyLogger->getHandlers());
     }
   }
 }
