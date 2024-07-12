@@ -42,9 +42,9 @@ final class IpcClient
   }
 
   /**
-   * @return iterable<?string>
+   * @return \Generator<?string>
    */
-  public function receive(): iterable
+  public function receive(): \Generator
   {
     \assert(null !== $this->sock);
 

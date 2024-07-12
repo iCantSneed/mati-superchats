@@ -14,7 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  * @internal
  */
 #[CoversNothing]
-final class RumbleIntegrationTest extends KernelTestCase
+final class Rumble3rdpartyTest extends KernelTestCase
 {
   private static string $livestreamUrl;
 

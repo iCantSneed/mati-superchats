@@ -56,4 +56,12 @@ final readonly class Terminator
   {
     return msg_send($this->messageQueue, self::QUEUE_MESSAGE_TYPE, self::QUEUE_TERMINATE_MESSAGE, false);
   }
+
+  /**
+   * @internal
+   */
+  public function close(): void
+  {
+    msg_remove_queue($this->messageQueue);
+  }
 }
