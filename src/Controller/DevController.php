@@ -88,20 +88,23 @@ final class DevController extends AbstractController
     $now = new \DateTimeImmutable();
     $id = $id ?? (string) $now->getTimestamp();
 
-    $message = new Message();
-    $message->id = $id;
-    $message->time = $now;
-    $message->userId = $id;
-    $message->text = "Message {$id}";
-    $message->rantPriceCents = 100;
+    $message = new Message(
+      id: $id,
+      time: $now,
+      userId: $id,
+      text: "Message {$id}",
+      rantPriceCents: 100,
+    );
 
-    $user = new User();
-    $user->id = $id;
-    $user->username = "User {$id}";
+    $user = new User(
+      id: $id,
+      username: "User {$id}",
+    );
 
-    $chatData = new RumbleChatData();
-    $chatData->messages = [$message];
-    $chatData->users = [$user];
+    $chatData = new RumbleChatData(
+      messages: [$message],
+      users: [$user],
+    );
 
     $json = $serializer->serialize($chatData, 'json');
     echo "data: {$json}\n\n";
