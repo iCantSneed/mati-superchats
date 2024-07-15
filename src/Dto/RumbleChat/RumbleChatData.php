@@ -8,16 +8,19 @@ use Symfony\Component\Serializer\Attribute\SerializedPath;
 
 /**
  * FIXME assign empty array because invalid JSON will be incorrectly deserialized.
- *
- * @psalm-suppress MissingConstructor
  */
 final class RumbleChatData
 {
-  /** @var Message[] */
-  #[SerializedPath('[data][messages]')]
-  public array $messages = [];
-
-  /** @var User[] */
-  #[SerializedPath('[data][users]')]
-  public array $users = [];
+  /**
+   * @param Message[] $messages
+   * @param User[]    $users
+   */
+  public function __construct(
+    #[SerializedPath('[data][messages]')]
+    public array $messages = [],
+    #[SerializedPath('[data][users]')]
+    public array $users = [],
+  ) {
+    // Do nothing.
+  }
 }
