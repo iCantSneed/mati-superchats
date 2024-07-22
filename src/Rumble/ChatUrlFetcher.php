@@ -11,7 +11,6 @@ final readonly class ChatUrlFetcher
 {
   public function __construct(
     private HttpClientInterface $httpClient,
-    private LivestreamUrlCache $livestreamUrlCache,
     private LoggerInterface $logger,
   ) {
     // Do nothing.
@@ -37,7 +36,6 @@ final readonly class ChatUrlFetcher
     $matched = preg_match('/RumbleChat\("(.*?)",.*?, (\d+),/', $html, $matches);
     if (1 !== $matched) {
       $this->logger->warning('ChatUrlFetcher: chat URL components not found', ['matched' => $matched]);
-      $this->livestreamUrlCache->storeLastFailedLivestreamUrl($livestreamUrl);
 
       return null;
     }

@@ -7,6 +7,7 @@ namespace Mati;
 use Mati\Dto\RumbleChat\RumbleChatData;
 use Mati\Rumble\ChatClient;
 use Mati\Rumble\ChatUrlFetcher;
+use Mati\Rumble\LivestreamUrlFetcher;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -16,17 +17,21 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 #[CoversNothing]
 final class RumbleIntegrationTest extends KernelTestCase
 {
-  private static string $livestreamUrl;
+  private static string $livestreamLandingUrl;
 
   public static function setUpBeforeClass(): void
   {
-    self::$livestreamUrl = $_ENV['TEST_LIVESTREAM_URL'];
+    self::$livestreamLandingUrl = $_ENV['TEST_LIVESTREAM_LANDING_URL'];
   }
 
   public function testGetChatMessages(): void
   {
+    /** @var LivestreamUrlFetcher */ $livestreamUrlFetcher = self::getContainer()->get(LivestreamUrlFetcher::class);
+    $livestreamUrl = $livestreamUrlFetcher->fetchLivestreamUrl(self::$livestreamLandingUrl);
+    self::assertNotNull($livestreamUrl);
+
     /** @var ChatUrlFetcher */ $chatUrlFetcher = self::getContainer()->get(ChatUrlFetcher::class);
-    $chatUrlAndId = $chatUrlFetcher->fetchChatUrl(self::$livestreamUrl);
+    $chatUrlAndId = $chatUrlFetcher->fetchChatUrl($livestreamUrl);
     self::assertNotNull($chatUrlAndId);
     [$chatUrl] = $chatUrlAndId;
 

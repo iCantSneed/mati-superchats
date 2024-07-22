@@ -8,11 +8,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use Mati\Dto\IpcMessage;
 use Mati\Ipc\IpcServer;
 use Mati\Ipc\Terminator;
+use Mati\MatiConfiguration;
 use Mati\Repository\StreamRepository;
 use Mati\Repository\SuperchatRepository;
 use Mati\Rumble\ChatClient;
 use Mati\Rumble\ChatUrlFetcher;
-use Mati\Rumble\RssLivestreamUrlFetcher;
+use Mati\Rumble\LivestreamUrlFetcher;
 use Mati\Superchat\SuperchatCache;
 use Mati\Superchat\SuperchatConverter;
 use Psr\Log\LoggerInterface;
@@ -21,6 +22,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 #[AsCommand('mati:stream')]
 final class MatiStreamCommand extends Command
@@ -29,7 +31,7 @@ final class MatiStreamCommand extends Command
 
   public function __construct(
     private readonly IpcServer $ipcServer,
-    private readonly RssLivestreamUrlFetcher $livestreamUrlFetcher,
+    private readonly LivestreamUrlFetcher $livestreamUrlFetcher,
     private readonly ChatUrlFetcher $chatUrlFetcher,
     private readonly ChatClient $chatClient,
     private readonly SuperchatConverter $superchatConverter,
@@ -39,6 +41,8 @@ final class MatiStreamCommand extends Command
     private readonly EntityManagerInterface $entityManager,
     private readonly Terminator $terminator,
     private readonly LoggerInterface $logger,
+    #[Autowire(env: MatiConfiguration::ENV_LIVESTREAM_LANDING_URL)]
+    private readonly string $livestreamLandingUrl,
   ) {
     parent::__construct();
   }
@@ -52,7 +56,7 @@ final class MatiStreamCommand extends Command
       return Command::FAILURE;
     }
 
-    if (($livestreamUrl = $this->livestreamUrlFetcher->fetchLivestreamUrl()) === null) {
+    if (($livestreamUrl = $this->livestreamUrlFetcher->fetchLivestreamUrl($this->livestreamLandingUrl)) === null) {
       return Command::FAILURE;
     }
 

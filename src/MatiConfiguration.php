@@ -11,5 +11,5 @@ final readonly class MatiConfiguration
 
   public const string ENV_ARCHIVE_SECRET = 'ARCHIVE_SECRET';
   public const string ENV_IPC_PORT = 'IPC_PORT';
-  public const string ENV_LIVESTREAM_RSS_URL = 'LIVESTREAM_RSS_URL';
+  public const string ENV_LIVESTREAM_LANDING_URL = 'LIVESTREAM_LANDING_URL';
 }
