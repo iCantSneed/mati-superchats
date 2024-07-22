@@ -29,6 +29,7 @@ final class RumbleIntegrationTest extends KernelTestCase
     /** @var LivestreamUrlFetcher */ $livestreamUrlFetcher = self::getContainer()->get(LivestreamUrlFetcher::class);
     $livestreamUrl = $livestreamUrlFetcher->fetchLivestreamUrl(self::$livestreamLandingUrl);
     self::assertNotNull($livestreamUrl);
+
     /** @var ChatUrlFetcher */ $chatUrlFetcher = self::getContainer()->get(ChatUrlFetcher::class);
     $chatUrlAndId = $chatUrlFetcher->fetchChatUrl($livestreamUrl);
     self::assertNotNull($chatUrlAndId);
