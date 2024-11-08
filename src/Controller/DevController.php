@@ -51,7 +51,7 @@ final class DevController extends AbstractController
   #[Route('/rumble-video', name: 'dev_rumble_video')]
   public function devRumbleVideo(#[MapQueryParameter] string $start): Response
   {
-    $str = sprintf(
+    $str = \sprintf(
       'RumbleChat("%s","bogus", %d,',
       $this->generateUrl('dev_base', referenceType: UrlGeneratorInterface::ABSOLUTE_URL),
       $start,

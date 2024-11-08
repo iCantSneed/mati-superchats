@@ -21,6 +21,6 @@ final class SuperchatMessage
     $dollars = $priceCents / 100;
     $cents = $priceCents % 100;
 
-    return sprintf('%d.%02d', $dollars, $cents);
+    return \sprintf('%d.%02d', $dollars, $cents);
   }
 }
