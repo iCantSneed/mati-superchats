@@ -1,5 +1,5 @@
-<turbo-stream action="append" target="{{ streamHtmlId }}"><template>
+<twig:Turbo:Stream:Append :target="streamHtmlId">
 {%- for superchat in superchats -%}
-  {{- component('SuperchatMessage', { superchat: superchat }) -}}
+  <twig:SuperchatMessage :superchat="superchat" />
 {%- endfor -%}
-</template></turbo-stream>
+</twig:Turbo:Stream:Append>

@@ -9,6 +9,6 @@
   </form>
   {%- endif -%}
   {%- for superchat in superchats -%}
-    {{- component('SuperchatMessage', { superchat: superchat }) -}}
+    <twig:SuperchatMessage :superchat="superchat" />
   {%- endfor -%}
 </div>

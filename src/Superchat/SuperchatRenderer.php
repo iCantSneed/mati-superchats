@@ -22,7 +22,7 @@ final readonly class SuperchatRenderer
   {
     return $this->twig->render('superchat/append_superchats.html.twig', [
       'superchats' => $superchats,
-      'streamHtmlId' => StreamSuperchats::htmlId($superchats[0]->getStream()),
+      'streamHtmlId' => StreamSuperchats::htmlIdSelector($superchats[0]->getStream()),
     ]);
   }
 
@@ -33,7 +33,7 @@ final readonly class SuperchatRenderer
   {
     return $this->twig->render('superchat/show_latest_superchats.html.twig', [
       'superchats' => $superchats,
-      'streamHtmlId' => StreamSuperchats::htmlId($superchats[0]->getStream()),
+      'streamHtmlId' => StreamSuperchats::htmlIdSelector($superchats[0]->getStream()),
     ]);
   }
 
@@ -44,7 +44,7 @@ final readonly class SuperchatRenderer
   {
     return $this->twig->render('superchat/prepend_superchats.html.twig', [
       'superchats' => $superchats,
-      'loadPrevHtmlId' => StreamSuperchats::loadPrevHtmlId($superchats[0]->getStream()),
+      'loadPrevHtmlId' => StreamSuperchats::loadPrevHtmlIdSelector($superchats[0]->getStream()),
     ]);
   }
 }

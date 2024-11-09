@@ -29,8 +29,18 @@ final class StreamSuperchats
     return "stream-{$stream->getId()}";
   }
 
+  public static function htmlIdSelector(Stream $stream): string
+  {
+    return '#'.self::htmlId($stream);
+  }
+
   public static function loadPrevHtmlId(Stream $stream): string
   {
     return "load-prev-{$stream->getId()}";
+  }
+
+  public static function loadPrevHtmlIdSelector(Stream $stream): string
+  {
+    return '#'.self::loadPrevHtmlId($stream);
   }
 }
