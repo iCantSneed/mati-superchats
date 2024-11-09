@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="height-full">
   <head>
-    <title>MATI Superchats</title>
+    <title>MATI Appendix</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uswds/3.8.0/css/uswds.min.css" integrity="sha512-fxBZVlVQrZVKTlt4kr/hPDd1p0SYHuQxytgI9ccrYonBfAFTXbGPSL08YdYUA8DPXpW25F5G+nOjQK76s5USQQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -11,10 +11,10 @@
   <body data-controller="live-superchats" data-live-superchats-live-url-value="{{ url('mati_live') }}">
     <div class="position-sticky top-0 z-200 bg-white border-bottom-1px border-base-lighter">
       <header class="usa-header usa-header--basic">
-        <div class="usa-nav-container grid-row flex-align-center">
+        <div class="usa-nav-container grid-row flex-align-center maxw-none">
           <div class="grid-col-fill">
             <div class="usa-logo">
-              <em class="usa-logo__text">MATI Superchats</em>
+              <em class="usa-logo__text">MATI Appendix</em>
             </div>   
           </div>
           <div class="grid-col-auto usa-nav__primary">
@@ -47,8 +47,8 @@
         </div>
       </header>
     </div>
-    <div class="usa-section">
-      <div class="grid-container">
+    <div class="usa-section padding-top-4">
+      <div class="grid-container maxw-none">
         <div class="grid-row">
           <main class="usa-prose" id="superchats-container">
             <div id="live-connecting">Hold on while you're being connected...</div>
@@ -58,7 +58,7 @@
     </div>
     <div class="usa-identifier">
       <section class="usa-identifier__section usa-identifier__section--usagov">
-        <div class="usa-identifier__container">
+        <div class="usa-identifier__container maxw-none">
           <p>Copyright &copy;{{ "now"|date("Y") }}. Licensed under <a href="https://github.com/iCantSneed/mati-superchats/blob/master/LICENSE">GNU Affero General Public License v3.0</a>.</p>
           <p>The owners and operators of this website take no responsibility and assume no liability for any user content that you or any other person or third party posts or sends using the service.</p>
           <p>Version: {{ include('revision', ignore_missing = true)|default('dev') }}</p>
