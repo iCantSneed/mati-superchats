@@ -8,7 +8,6 @@ use Mati\Dto\RumbleChat\Message;
 use Mati\Dto\RumbleChat\RumbleChatData;
 use Mati\Dto\RumbleChat\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
@@ -20,32 +19,20 @@ use Symfony\Component\Serializer\SerializerInterface;
 #[Route('/dev', condition: "env('APP_ENV') == 'dev'")]
 final class DevController extends AbstractController
 {
-  #[Route('/rss')]
-  public function devRssFeed(
+  #[Route('/landing')]
+  public function devLandingPage(
     #[MapQueryParameter]
     ?string $start,
-    Request $request,
   ): Response {
     $start = $start ?? (string) random_int(0, 0x7FFF_FFFF);
-    $baseUrl = $request->getSchemeAndHttpHost();
     $devRumbleVideoLink = $this->generateUrl('dev_rumble_video', ['start' => $start]);
-    $rss = <<<EOF
-    <?xml version="1.0" ?>
-    <rss version="2.0">
-    <channel>
-      <title>Dev</title>
-      <description>Dev</description>
-      <link>{$baseUrl}</link>
-      <item>
-        <title>Dev</title>
-        <description>Dev</description>
-        <link>{$devRumbleVideoLink}</link>
-      </item>
-      </channel>
-    </rss>
+    $html = <<<EOF
+    <div class="thumbnail__thumb--live">
+      <a href="{$devRumbleVideoLink}"></a>
+    </div>
     EOF;
 
-    return new Response($rss);
+    return new Response($html);
   }
 
   #[Route('/rumble-video', name: 'dev_rumble_video')]
