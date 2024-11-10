@@ -67,6 +67,9 @@ class Superchat
     return $this;
   }
 
+  /**
+   * @psalm-suppress PossiblyUnusedMethod
+   */
   public function getPriceCents(): int
   {
     \assert(null !== $this->price_cents);
