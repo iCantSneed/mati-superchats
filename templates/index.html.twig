@@ -10,40 +10,29 @@
   </head>
   <body data-controller="live-superchats" data-live-superchats-live-url-value="{{ url('mati_live') }}">
     <div class="position-sticky top-0 z-200 bg-white border-bottom-1px border-base-lighter">
+      <div class="usa-overlay"></div>
       <header class="usa-header usa-header--basic">
-        <div class="usa-nav-container grid-row flex-align-center maxw-none">
-          <div class="grid-col-fill">
-            <div class="usa-logo">
+        <div class="usa-nav-container maxw-none">
+          <div class="usa-navbar">
+            <div class="usa-logo display-flex flex-align-center">
               <em class="usa-logo__text">MATI Appendix</em>
-            </div>   
-          </div>
-          <div class="grid-col-auto usa-nav__primary">
-            <div class="usa-nav__primary-item">
-              <a target="_blank" class="usa-nav-link" title="Disconnected" data-live-superchats-target="indicatorLink">
-                <svg class="usa-icon square-4 text-red" data-live-superchats-target="indicatorImage">
-                  <use href="{{ asset('external/sprite.svg') }}#electrical_services"></use>
-                </svg>
+              <a target="_blank" class="usa-nav-link margin-left-1 square-4" title="Disconnected" data-live-superchats-target="indicatorLink">
+                {{- _self.svg("electrical_services", "square-4 text-red", {"data-live-superchats-target": "indicatorImage"}) -}}
               </a>
             </div>
+            <button type="button" class="usa-menu-btn">
+              {{- _self.svg("menu") -}}
+            </button>
           </div>
-          <div class="grid-col-auto usa-nav__primary">
-            <div class="usa-nav__primary-item">
-              <a href="https://github.com/iCantSneed/mati-superchats/releases" target="_blank" class="usa-nav-link" title="Superchats Archive">
-                <svg class="usa-icon square-4">
-                  <use href="{{ asset('external/sprite.svg') }}#topic"></use>
-                </svg>
-              </a>
-            </div>
-          </div>
-          <div class="grid-col-auto usa-nav__primary">
-            <div class="usa-nav__primary-item">
-              <a href="https://github.com/iCantSneed/mati-superchats" target="_blank" class="usa-nav-link" title="SneedHub">
-                <svg class="usa-icon square-4">
-                  <use href="{{ asset('external/sprite.svg') }}#github"></use>
-                </svg>
-              </a>
-            </div>
-          </div>
+          <nav class="usa-nav">
+            <button type="button" class="usa-nav__close">
+              {{- _self.svg("close") -}}
+            </button>
+            <ul class="usa-nav__primary usa-accordion">
+              {{- _self.navlink("Superchats Archive", "https://github.com/iCantSneed/mati-superchats/releases", "topic") -}}
+              {{- _self.navlink("SneedHub", "https://github.com/iCantSneed/mati-superchats", "github") -}}
+            </ul>
+          </nav>
         </div>
       </header>
     </div>
@@ -68,3 +57,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uswds/3.8.0/js/uswds.min.js" integrity="sha512-V/eNPuqU6gTDHwQsFL5X12i0TzX5lwVvON6VuEeTXDoSnAeA5nnc53TUEhiUdT16s0nj4MXo6OcUBAvwhdFOAw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   </body>
 </html>
+
+{%- macro svg(img, classes="", attr={}) -%}
+<svg class="usa-icon {{ classes }}" {%- for k, v in attr -%}{{ k }}="{{ v }}"{%- endfor -%}>
+  <use href="{{ asset('external/sprite.svg') }}#{{ img }}"></use>
+</svg>
+{%- endmacro -%}
+{%- macro navlink(title, href, img) -%}
+  <li class="usa-nav__primary-item">
+    <a href="{{ href }}" target="_blank" class="usa-nav-link" title="{{ title }}">
+      {{- _self.svg(img, "square-4 text-middle") -}}
+      <span class="desktop:display-none text-middle">{{ title }}</span>
+    </a>
+  </li>
+{%- endmacro -%}
