@@ -37,9 +37,9 @@
         "symfony/stimulus-bundle": "^2.17",
         "symfony/twig-bundle": "7.1.*",
         "symfony/ux-turbo": "^2.17",
-        "symfony/ux-twig-component": "^2.17",
         "symfony/yaml": "7.1.*",
         "twig/extra-bundle": "^2.12|^3.0",
+        "twig/intl-extra": "^3.13",
         "twig/twig": "^2.12|^3.0"
     },
     "require-dev": {

@@ -1,0 +1,31 @@
+{%- macro stream_superchats(superchats) -%}
+{%- set stream = superchats[0].stream -%}
+<div id="{{ _self.stream_html_id(stream) }}">
+  <h2 class="display-inline">{{ stream.date|date('F j, Y') }}</h2>
+  {%- if stream.prev -%}
+  &nbsp;
+  <form id="{{ _self.load_prev_html_id(stream.prev) }}" class="display-inline" action="{{ url('mati_prev', {stream: stream.prev.id}) }}">
+    <button type="submit" class="usa-button usa-button--unstyled" data-turbo-stream>
+      (load previous stream superchats)
+    </button>
+  </form>
+  {%- endif -%}
+  {%- for superchat in superchats -%}
+    {{- _self.superchat_message(superchat) -}}
+  {%- endfor -%}
+</div>
+{%- endmacro -%}
+
+{%- macro superchat_message(superchat) -%}
+<div class="usa-summary-box" id="superchat-{{ superchat.id }}">
+  <div class="usa-summary-box__body">
+    <h4 class="usa-summary-box__heading">
+      {{ superchat.username }} for {{ (superchat.priceCents / 100) | format_currency('USD', {decimal_always_shown: true}) }}
+    </h4>
+    <div class="usa-summary-box__link">{{ superchat.message }}</div>
+  </div>
+</div>
+{%- endmacro -%}
+
+{%- macro stream_html_id(stream) -%}stream-{{ stream.id }}{%- endmacro -%}
+{%- macro load_prev_html_id(stream) -%}load-prev-{{ stream.id }}{%- endmacro -%}

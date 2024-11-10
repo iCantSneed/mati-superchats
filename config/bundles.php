@@ -14,7 +14,6 @@ use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 use Symfony\UX\StimulusBundle\StimulusBundle;
 use Symfony\UX\Turbo\TurboBundle;
-use Symfony\UX\TwigComponent\TwigComponentBundle;
 use Twig\Extra\TwigExtraBundle\TwigExtraBundle;
 
 return [
@@ -29,7 +28,6 @@ return [
   DoctrineFixturesBundle::class => ['dev' => true, 'test' => true],
   TwigExtraBundle::class => ['all' => true],
   StimulusBundle::class => ['all' => true],
-  TwigComponentBundle::class => ['all' => true],
   TurboBundle::class => ['all' => true],
   SecurityBundle::class => ['all' => true],
 ];

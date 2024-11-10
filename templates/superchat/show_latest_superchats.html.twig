@@ -1,5 +1,8 @@
-<twig:Turbo:Stream:Remove target="#live-connecting" />
-<twig:Turbo:Stream:Remove :target="streamHtmlId" />
-<twig:Turbo:Stream:Append target="#superchats-container">
-  <twig:StreamSuperchats :superchats="superchats" />
-</twig:Turbo:Stream:Append>
+{%- import "superchat/_macros.html.twig" as macros -%}
+
+<turbo-stream action="remove" target="live-connecting"></turbo-stream>
+<turbo-stream action="remove" target="{{ macros.stream_html_id(superchats[0].stream) }}"></turbo-stream>
+<turbo-stream action="append" target="superchats-container"><template>
+  {%- import "superchat/_macros.html.twig" as macros -%}
+  {{- macros.stream_superchats(superchats) -}}
+</template></turbo-stream>

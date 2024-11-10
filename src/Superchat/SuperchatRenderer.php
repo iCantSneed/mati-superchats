@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Mati\Superchat;
 
 use Mati\Entity\Superchat;
-use Mati\Twig\Components\StreamSuperchats;
 use Twig\Environment;
 
 final readonly class SuperchatRenderer
@@ -22,7 +21,6 @@ final readonly class SuperchatRenderer
   {
     return $this->twig->render('superchat/append_superchats.html.twig', [
       'superchats' => $superchats,
-      'streamHtmlId' => StreamSuperchats::htmlIdSelector($superchats[0]->getStream()),
     ]);
   }
 
@@ -33,7 +31,6 @@ final readonly class SuperchatRenderer
   {
     return $this->twig->render('superchat/show_latest_superchats.html.twig', [
       'superchats' => $superchats,
-      'streamHtmlId' => StreamSuperchats::htmlIdSelector($superchats[0]->getStream()),
     ]);
   }
 
@@ -44,7 +41,6 @@ final readonly class SuperchatRenderer
   {
     return $this->twig->render('superchat/prepend_superchats.html.twig', [
       'superchats' => $superchats,
-      'loadPrevHtmlId' => StreamSuperchats::loadPrevHtmlIdSelector($superchats[0]->getStream()),
     ]);
   }
 }

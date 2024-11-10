@@ -1,5 +1,7 @@
-<twig:Turbo:Stream:Append :target="streamHtmlId">
+{%- import "superchat/_macros.html.twig" as macros -%}
+
+<turbo-stream action="append" target="{{ macros.stream_html_id(superchats[0].stream) }}"><template>
 {%- for superchat in superchats -%}
-  <twig:SuperchatMessage :superchat="superchat" />
+  {{- macros.superchat_message(superchat) -}}
 {%- endfor -%}
-</twig:Turbo:Stream:Append>
+</template></turbo-stream>

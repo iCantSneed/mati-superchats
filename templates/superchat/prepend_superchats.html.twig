@@ -1,4 +1,6 @@
-<twig:Turbo:Stream:Remove :target="loadPrevHtmlId" />
-<twig:Turbo:Stream:Prepend target="#superchats-container">
-  <twig:StreamSuperchats :superchats="superchats" />
-</twig:Turbo:Stream:Prepend>
+{%- import "superchat/_macros.html.twig" as macros -%}
+
+<turbo-stream action="remove" target="{{ macros.load_prev_html_id(superchats[0].stream) }}"></turbo-stream>
+<turbo-stream action="prepend" target="superchats-container"><template>
+  {{- macros.stream_superchats(superchats) -}}
+</template></turbo-stream>
