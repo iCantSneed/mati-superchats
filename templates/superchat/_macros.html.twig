@@ -27,5 +27,13 @@
 </div>
 {%- endmacro -%}
 
+{%- macro stream_nav(superchats) -%}
+{%- set stream = superchats[0].stream -%}
+<li class="usa-in-page-nav__item usa-in-page-nav__item--primary" id="{{ _self.stream_nav_html_id(stream) }}">
+  <a href="#{{- _self.stream_html_id(stream) -}}" class="usa-in-page-nav__link">{{ stream.date|date('F j, Y') }}</a>
+</li>
+{%- endmacro -%}
+
 {%- macro stream_html_id(stream) -%}stream-{{ stream.id }}{%- endmacro -%}
 {%- macro load_prev_html_id(stream) -%}load-prev-{{ stream.id }}{%- endmacro -%}
+{%- macro stream_nav_html_id(stream) -%}stream-nav-{{ stream.id }}{%- endmacro -%}

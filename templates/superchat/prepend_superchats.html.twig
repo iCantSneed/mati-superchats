@@ -1,6 +1,10 @@
 {%- import "superchat/_macros.html.twig" as macros -%}
 
 <turbo-stream action="remove" target="{{ macros.load_prev_html_id(superchats[0].stream) }}"></turbo-stream>
+<turbo-stream action="remove" target="{{ macros.stream_nav_html_id(superchats[0].stream) }}"></turbo-stream>
 <turbo-stream action="prepend" target="superchats-container"><template>
   {{- macros.stream_superchats(superchats) -}}
 </template></turbo-stream>
+<turbo-stream action="prepend" targets=".usa-in-page-nav__list"><template>
+  {{- macros.stream_nav(superchats) -}}
+</turbo-stream>

@@ -5,3 +5,6 @@
 <turbo-stream action="append" target="superchats-container"><template>
   {{- macros.stream_superchats(superchats) -}}
 </template></turbo-stream>
+<turbo-stream action="append" targets=".usa-in-page-nav__list"><template>
+  {{- macros.stream_nav(superchats) -}}
+</turbo-stream>
