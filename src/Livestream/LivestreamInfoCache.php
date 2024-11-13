@@ -14,9 +14,9 @@ final readonly class LivestreamInfoCache
   private CacheItemInterface $cacheItem;
 
   public function __construct(
-    private CacheItemPoolInterface $cache,
+    private CacheItemPoolInterface $matiCache,
   ) {
-    $this->cacheItem = $cache->getItem(self::LIVESTREAM_CACHE_KEY);
+    $this->cacheItem = $matiCache->getItem(self::LIVESTREAM_CACHE_KEY);
   }
 
   public function getLivestreamInfo(): ?LivestreamInfo
@@ -30,6 +30,6 @@ final readonly class LivestreamInfoCache
   public function setLivestreamInfo(?LivestreamInfo $livestreamInfo): void
   {
     $this->cacheItem->set($livestreamInfo);
-    $this->cache->save($this->cacheItem);
+    $this->matiCache->save($this->cacheItem);
   }
 }

@@ -38,7 +38,6 @@ final readonly class SuperchatStreamer
     }
     self::transmitSseMessage($livestreamUrl, 'livestream_url');
 
-
     $lastStreamId = $superchats[0]->getStream()->getId();
 
     foreach ($this->ipcClient->receive() as $message) {
