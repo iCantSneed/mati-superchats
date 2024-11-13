@@ -9,8 +9,7 @@ use Mati\Ipc\IpcMessage;
 use Mati\Ipc\IpcServer;
 use Mati\Ipc\Terminator;
 use Mati\Livestream\ChatClient;
-use Mati\Livestream\ChatUrlFetcher;
-use Mati\Livestream\LivestreamUrlFetcher;
+use Mati\Livestream\LivestreamInfoFetcher;
 use Mati\MatiConfiguration;
 use Mati\Repository\StreamRepository;
 use Mati\Repository\SuperchatRepository;
@@ -31,8 +30,7 @@ final class MatiStreamCommand extends Command
 
   public function __construct(
     private readonly IpcServer $ipcServer,
-    private readonly LivestreamUrlFetcher $livestreamUrlFetcher,
-    private readonly ChatUrlFetcher $chatUrlFetcher,
+    private readonly LivestreamInfoFetcher $livestreamInfoFetcher,
     private readonly ChatClient $chatClient,
     private readonly SuperchatConverter $superchatConverter,
     private readonly SuperchatCache $superchatCache,
@@ -56,11 +54,7 @@ final class MatiStreamCommand extends Command
       return Command::FAILURE;
     }
 
-    if (($livestreamUrl = $this->livestreamUrlFetcher->fetchLivestreamUrl($this->livestreamLandingUrl)) === null) {
-      return Command::FAILURE;
-    }
-
-    if (($chatUrlAndId = $this->chatUrlFetcher->fetchChatUrl($livestreamUrl)) === null) {
+    if (($livestreamInfo = $this->livestreamInfoFetcher->fetchLivestreamInfo($this->livestreamLandingUrl)) === null) {
       return Command::FAILURE;
     }
 
@@ -68,11 +62,10 @@ final class MatiStreamCommand extends Command
       return Command::FAILURE;
     }
 
-    [$chatUrl, $streamId] = $chatUrlAndId;
-    $stream = $this->streamRepository->getOrCreateStream($streamId, new \DateTimeImmutable());
+    $stream = $this->streamRepository->getOrCreateStream($livestreamInfo->chatId, new \DateTimeImmutable());
 
-    foreach ($this->chatClient->readData($chatUrl) as $rumbleChatData) {
-      $ipcMessage = new IpcMessage($livestreamUrl);
+    foreach ($this->chatClient->readData($livestreamInfo->chatUrl) as $rumbleChatData) {
+      $ipcMessage = new IpcMessage($livestreamInfo->livestreamUrl);
 
       if (null !== $rumbleChatData) {
         foreach ($this->superchatConverter->extractSuperchats($rumbleChatData, $stream) as $superchat) {
