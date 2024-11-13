@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Mati;
 
-use Mati\Dto\RumbleChat\RumbleChatData;
-use Mati\Rumble\ChatClient;
-use Mati\Rumble\ChatUrlFetcher;
-use Mati\Rumble\LivestreamUrlFetcher;
+use Mati\Livestream\ChatClient;
+use Mati\Livestream\LivestreamInfoFetcher;
+use Mati\Livestream\RumbleChat\RumbleChatData;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -26,17 +25,12 @@ final class RumbleIntegrationTest extends KernelTestCase
 
   public function testGetChatMessages(): void
   {
-    /** @var LivestreamUrlFetcher */ $livestreamUrlFetcher = self::getContainer()->get(LivestreamUrlFetcher::class);
-    $livestreamUrl = $livestreamUrlFetcher->fetchLivestreamUrl(self::$livestreamLandingUrl);
-    self::assertNotNull($livestreamUrl);
-
-    /** @var ChatUrlFetcher */ $chatUrlFetcher = self::getContainer()->get(ChatUrlFetcher::class);
-    $chatUrlAndId = $chatUrlFetcher->fetchChatUrl($livestreamUrl);
-    self::assertNotNull($chatUrlAndId);
-    [$chatUrl] = $chatUrlAndId;
+    /** @var LivestreamInfoFetcher */ $livestreamInfoFetcher = self::getContainer()->get(LivestreamInfoFetcher::class);
+    $livestreamInfo = $livestreamInfoFetcher->fetchLivestreamInfo(self::$livestreamLandingUrl);
+    self::assertNotNull($livestreamInfo);
 
     /** @var ChatClient */ $chatClient = self::getContainer()->get(ChatClient::class);
-    foreach ($chatClient->readData($chatUrl) as $rumbleChatData) {
+    foreach ($chatClient->readData($livestreamInfo->chatUrl) as $rumbleChatData) {
       if (null === $rumbleChatData) {
         continue;
       }

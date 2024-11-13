@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Mati\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Mati\Dto\IpcMessage;
+use Mati\Ipc\IpcMessage;
 use Mati\Ipc\IpcServer;
 use Mati\Ipc\Terminator;
+use Mati\Livestream\ChatClient;
+use Mati\Livestream\LivestreamInfoCache;
+use Mati\Livestream\LivestreamInfoFetcher;
 use Mati\MatiConfiguration;
 use Mati\Repository\StreamRepository;
 use Mati\Repository\SuperchatRepository;
-use Mati\Rumble\ChatClient;
-use Mati\Rumble\ChatUrlFetcher;
-use Mati\Rumble\LivestreamUrlFetcher;
 use Mati\Superchat\SuperchatCache;
 use Mati\Superchat\SuperchatConverter;
 use Psr\Log\LoggerInterface;
@@ -31,8 +31,8 @@ final class MatiStreamCommand extends Command
 
   public function __construct(
     private readonly IpcServer $ipcServer,
-    private readonly LivestreamUrlFetcher $livestreamUrlFetcher,
-    private readonly ChatUrlFetcher $chatUrlFetcher,
+    private readonly LivestreamInfoFetcher $livestreamInfoFetcher,
+    private readonly LivestreamInfoCache $livestreamInfoCache,
     private readonly ChatClient $chatClient,
     private readonly SuperchatConverter $superchatConverter,
     private readonly SuperchatCache $superchatCache,
@@ -56,11 +56,9 @@ final class MatiStreamCommand extends Command
       return Command::FAILURE;
     }
 
-    if (($livestreamUrl = $this->livestreamUrlFetcher->fetchLivestreamUrl($this->livestreamLandingUrl)) === null) {
-      return Command::FAILURE;
-    }
+    if (($livestreamInfo = $this->livestreamInfoFetcher->fetchLivestreamInfo($this->livestreamLandingUrl)) === null) {
+      $this->livestreamInfoCache->setLivestreamInfo(null);
 
-    if (($chatUrlAndId = $this->chatUrlFetcher->fetchChatUrl($livestreamUrl)) === null) {
       return Command::FAILURE;
     }
 
@@ -68,11 +66,11 @@ final class MatiStreamCommand extends Command
       return Command::FAILURE;
     }
 
-    [$chatUrl, $streamId] = $chatUrlAndId;
-    $stream = $this->streamRepository->getOrCreateStream($streamId, new \DateTimeImmutable());
+    $this->livestreamInfoCache->setLivestreamInfo($livestreamInfo);
+    $stream = $this->streamRepository->getOrCreateStream($livestreamInfo->chatId, new \DateTimeImmutable());
 
-    foreach ($this->chatClient->readData($chatUrl) as $rumbleChatData) {
-      $ipcMessage = new IpcMessage($livestreamUrl);
+    foreach ($this->chatClient->readData($livestreamInfo->chatUrl) as $rumbleChatData) {
+      $ipcMessage = new IpcMessage();
 
       if (null !== $rumbleChatData) {
         foreach ($this->superchatConverter->extractSuperchats($rumbleChatData, $stream) as $superchat) {
@@ -100,6 +98,8 @@ final class MatiStreamCommand extends Command
         return Command::FAILURE;
       }
     }
+
+    $this->livestreamInfoCache->setLivestreamInfo(null);
 
     return Command::SUCCESS;
   }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Mati\Dto\RumbleChat;
+namespace Mati\Livestream\RumbleChat;
 
 final class User
 {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Mati\Rumble;
+namespace Mati\Livestream;
 
-use Mati\Dto\RumbleChat\RumbleChatData;
+use Mati\Livestream\RumbleChat\RumbleChatData;
 use Mati\MatiConfiguration;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\Chunk\ServerSentEvent;

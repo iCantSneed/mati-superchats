@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Mati\Superchat;
 
-use Mati\Dto\RumbleChat\RumbleChatData;
 use Mati\Entity\Stream;
 use Mati\Entity\Superchat;
+use Mati\Livestream\RumbleChat\RumbleChatData;
 
 final readonly class SuperchatConverter
 {
