@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Mati\Rumble;
+namespace Mati\Livestream;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;

@@ -95,6 +95,9 @@
         ],
         "test:3rdparty": [
             "/root/composer-dev/vendor/bin/phpunit --testsuite 3rdparty"
+        ],
+        "psalm-clear-cache": [
+            "/root/composer-psalm/vendor/bin/psalm --clear-cache"
         ]
     },
     "conflict": {

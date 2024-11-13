@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Mati\Superchat;
 
-use Mati\Dto\IpcMessage;
 use Mati\Entity\Superchat;
 use Mati\Ipc\IpcClient;
+use Mati\Ipc\IpcMessage;
 use Mati\MatiConfiguration;
 
 final readonly class SuperchatStreamer

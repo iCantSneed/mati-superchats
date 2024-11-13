@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Mati\Dto;
+namespace Mati\Ipc;
 
 use Mati\Entity\Superchat;
 
