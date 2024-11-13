@@ -9,6 +9,7 @@ use Mati\Ipc\IpcMessage;
 use Mati\Ipc\IpcServer;
 use Mati\Ipc\Terminator;
 use Mati\Livestream\ChatClient;
+use Mati\Livestream\LivestreamInfoCache;
 use Mati\Livestream\LivestreamInfoFetcher;
 use Mati\MatiConfiguration;
 use Mati\Repository\StreamRepository;
@@ -31,6 +32,7 @@ final class MatiStreamCommand extends Command
   public function __construct(
     private readonly IpcServer $ipcServer,
     private readonly LivestreamInfoFetcher $livestreamInfoFetcher,
+    private readonly LivestreamInfoCache $livestreamInfoCache,
     private readonly ChatClient $chatClient,
     private readonly SuperchatConverter $superchatConverter,
     private readonly SuperchatCache $superchatCache,
@@ -55,6 +57,8 @@ final class MatiStreamCommand extends Command
     }
 
     if (($livestreamInfo = $this->livestreamInfoFetcher->fetchLivestreamInfo($this->livestreamLandingUrl)) === null) {
+      $this->livestreamInfoCache->setLivestreamInfo(null);
+
       return Command::FAILURE;
     }
 
@@ -62,10 +66,11 @@ final class MatiStreamCommand extends Command
       return Command::FAILURE;
     }
 
+    $this->livestreamInfoCache->setLivestreamInfo($livestreamInfo);
     $stream = $this->streamRepository->getOrCreateStream($livestreamInfo->chatId, new \DateTimeImmutable());
 
     foreach ($this->chatClient->readData($livestreamInfo->chatUrl) as $rumbleChatData) {
-      $ipcMessage = new IpcMessage($livestreamInfo->livestreamUrl);
+      $ipcMessage = new IpcMessage();
 
       if (null !== $rumbleChatData) {
         foreach ($this->superchatConverter->extractSuperchats($rumbleChatData, $stream) as $superchat) {
@@ -93,6 +98,8 @@ final class MatiStreamCommand extends Command
         return Command::FAILURE;
       }
     }
+
+    $this->livestreamInfoCache->setLivestreamInfo(null);
 
     return Command::SUCCESS;
   }
