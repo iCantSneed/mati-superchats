@@ -19,7 +19,7 @@ framework:
             #my.dedicated.cache: null
         app: cache.adapter.filesystem
         pools:
-            superchats.cache:
+            mati.cache:
                 adapters:
                   - cache.adapter.array
                   - cache.adapter.filesystem

@@ -16,7 +16,7 @@ final readonly class SuperchatCache
   private const string SUPERCHATS_CACHE_KEY = 'mati.superchats';
 
   public function __construct(
-    private CacheItemPoolInterface $superchatsCache,
+    private CacheItemPoolInterface $matiCache,
     private SuperchatRepository $superchatRepository,
     private LoggerInterface $logger,
   ) {
@@ -28,7 +28,7 @@ final readonly class SuperchatCache
    */
   public function getLatestSuperchats(): array
   {
-    $superchatsCacheItem = $this->superchatsCache->getItem(self::SUPERCHATS_CACHE_KEY);
+    $superchatsCacheItem = $this->matiCache->getItem(self::SUPERCHATS_CACHE_KEY);
 
     if (null !== ($superchats = self::extractSuperchats($superchatsCacheItem))) {
       $this->logger->debug('SuperchatCache: cache hit', ['superchats' => $superchats]);
@@ -39,18 +39,18 @@ final readonly class SuperchatCache
     $this->logger->notice('SuperchatCache: cache miss or superchats is not a valid object, refreshing cache');
     $superchats = $this->superchatRepository->findLatest();
     $superchatsCacheItem->set($superchats);
-    $this->superchatsCache->save($superchatsCacheItem);
+    $this->matiCache->save($superchatsCacheItem);
 
     return $superchats;
   }
 
   public function storeSuperchat(Superchat $superchat): void
   {
-    $superchatsCacheItem = $this->superchatsCache->getItem(self::SUPERCHATS_CACHE_KEY);
+    $superchatsCacheItem = $this->matiCache->getItem(self::SUPERCHATS_CACHE_KEY);
     $superchats = $this->getSuperchatsFromCache($superchatsCacheItem, $superchat->getStream());
     $superchats[] = $superchat;
     $superchatsCacheItem->set($superchats);
-    $this->superchatsCache->save($superchatsCacheItem);
+    $this->matiCache->save($superchatsCacheItem);
   }
 
   /**

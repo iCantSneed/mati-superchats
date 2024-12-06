@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Mati\Superchat;
 
-use Mati\Dto\IpcMessage;
 use Mati\Entity\Superchat;
 use Mati\Ipc\IpcClient;
+use Mati\Ipc\IpcMessage;
+use Mati\Livestream\LivestreamInfoCache;
 use Mati\MatiConfiguration;
 
 final readonly class SuperchatStreamer
@@ -15,6 +16,7 @@ final readonly class SuperchatStreamer
     private IpcClient $ipcClient,
     private SuperchatCache $superchatCache,
     private SuperchatRenderer $renderer,
+    private LivestreamInfoCache $livestreamInfoCache,
   ) {
     // Do nothing.
   }
@@ -27,6 +29,15 @@ final readonly class SuperchatStreamer
 
     $superchats = $this->superchatCache->getLatestSuperchats();
     $this->transmitLatestSuperchats($superchats);
+
+    $livestreamUrl = $this->livestreamInfoCache->getLivestreamInfo()?->livestreamUrl;
+    if (null === $livestreamUrl) {
+      self::transmitSseMessage('', 'nostream');
+
+      return;
+    }
+    self::transmitSseMessage($livestreamUrl, 'livestream_url');
+
     $lastStreamId = $superchats[0]->getStream()->getId();
 
     foreach ($this->ipcClient->receive() as $message) {
@@ -50,8 +61,6 @@ final readonly class SuperchatStreamer
     if (!$ipcMessage instanceof IpcMessage) {
       return;
     }
-
-    self::transmitSseMessage($ipcMessage->livestreamUrl, 'livestream_url');
 
     if (!isset($ipcMessage->superchats[0])) {
       return;

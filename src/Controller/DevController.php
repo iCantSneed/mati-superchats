@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Mati\Controller;
 
-use Mati\Dto\RumbleChat\Message;
-use Mati\Dto\RumbleChat\RumbleChatData;
-use Mati\Dto\RumbleChat\User;
+use Mati\Livestream\RumbleChat\Message;
+use Mati\Livestream\RumbleChat\RumbleChatData;
+use Mati\Livestream\RumbleChat\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
