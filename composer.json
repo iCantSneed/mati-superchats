@@ -19,7 +19,7 @@
         "symfony/asset": "7.1.*",
         "symfony/asset-mapper": "7.2.*",
         "symfony/console": "7.1.*",
-        "symfony/css-selector": "7.1.*",
+        "symfony/css-selector": "7.2.*",
         "symfony/dom-crawler": "7.1.*",
         "symfony/dotenv": "7.1.*",
         "symfony/expression-language": "7.1.*",
